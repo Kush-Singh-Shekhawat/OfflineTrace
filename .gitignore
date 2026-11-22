@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+ENV/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+private_keys/
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Runtime data and local databases
+validator_data/*
+!validator_data/.gitkeep
+storage_data/*
+!storage_data/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test artifacts
+.pytest_cache/
+.coverage*
+test-results/
+playwright-report/

@@ -1,0 +1,1 @@
+"""Validator node configuration placeholder."""
