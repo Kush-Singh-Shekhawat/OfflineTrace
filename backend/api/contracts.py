@@ -52,6 +52,24 @@ class ErrorCode(str, Enum):
     INTERNAL_ERROR = "INTERNAL_ERROR"
     BAD_GATEWAY = "BAD_GATEWAY"
 
+# Algorithm identifiers (forced to specific values)
+class KEMAlgorithm(str, Enum):
+    ML_KEM_768 = "ML-KEM-768"
+
+class SignatureAlgorithm(str, Enum):
+    ML_DSA_65 = "ML-DSA-65"
+
+class SymmetricAlgorithm(str, Enum):
+    AES_256_GCM = "AES-256-GCM"
+
+class KDFAlgorithm(str, Enum):
+    HKDF_SHA_256 = "HKDF-SHA-256"
+    INVALID_REQUEST = "INVALID_REQUEST"
+    UNAUTHORIZED = "UNAUTHORIZED"
+    NOT_FOUND = "NOT_FOUND"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    BAD_GATEWAY = "BAD_GATEWAY"
+
 # ---------------------------------------------------------------------------
 # Helper utilities – canonical JSON and SHA3‑256 digests
 # ---------------------------------------------------------------------------
