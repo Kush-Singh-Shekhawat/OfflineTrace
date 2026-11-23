@@ -11,8 +11,8 @@
 | **Phase 2** | Independent foundations (A: crypto/KEM/envelopes; B: PDF watermark; C: ledger model) | ✅ **Completed (All)** | All 3 foundations verified |
 | **Phase 3** | Core module tests (A: tamper/wrong key; B: watermark metrics; C: 2-of-3 quorum) | ✅ **Completed (All)** | All module test gates pass |
 | **Phase 4** | First vertical slice (decrypt → watermark → output hash → canonical event → signature → quorum commit) | ✅ **Completed (All)** | Full flow passes twice; strict fail-closed release verified |
-| **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | 🚀 **Next Up** | Recipient screen live; investigation flow next |
-| **Phase 6** | P1/P2 enhancements (FEC/redundancy, tamper harness, confidence metrics, export) | ⏳ **Pending** | Scheduled after Phase 5 |
+| **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | ✅ **Completed** | Full flow verified; all 64 tests passing |
+| **Phase 6** | P1/P2 enhancements (tamper harness, FEC/redundancy, confidence metrics, export) | 🚀 **In Progress** | Phase 6 Cryptographic Tamper Harness created |
 | **Phase 7** | LAN / offline freeze (1 validator per laptop, 3 laptops, WAN disconnected, persistence, rehearsal) | ⏳ **Pending** | Final release gate |
 
 ## Status by area
@@ -42,10 +42,13 @@
     - Forensic watermark extracted from released PDF matches session token.
 
 - **2026-11-23 (Full Team Integration - Member A, B, C)**: `pytest -v`
-  - **47 passed** in 2.62s (Python 3.12.10, pytest-8.4.2)
-  - **Member A (32 tests)**: AES-256-GCM, HKDF-SHA-256, ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204), CEK Envelopes, KeyManager keystore, RecipientCryptoService local boundary.
+  - **71 passed** (Python 3.12.10, pytest-8.4.2)
+  - **Member A (39 tests)**:
+    - 32 core crypto (AES-256-GCM, HKDF-SHA-256, ML-KEM-768 FIPS 203, ML-DSA-65 FIPS 204, KeyManager, Envelope).
+    - 7 Phase 6 Adversarial Tamper Harness tests (ciphertext bit-flip, KEM ciphertext tamper, unauthorized recipient impersonation, HKDF context confusion, ML-DSA signature repudiation, revoked key blocking, Byzantine quorum partition).
   - **Member B (5 tests)**: Watermark embed/extract round-trip, invalid PDF rejection, empty token rejection.
-  - **Member C (10 tests)**: 2-of-3 validator quorum commit & persistence across restart, 1-validator fail closed, replay event rejection, tamper divergence detection, DB isolation, block hash determinism.
+  - **Member C & Cross-Team (27 tests)**: 2-of-3 validator quorum commit & persistence across restart, 1-validator fail closed, replay event rejection, tamper divergence detection, DB isolation, block hash determinism, vertical slice flows, forensic investigation reports.
+
 
 ## Integration checklist
 

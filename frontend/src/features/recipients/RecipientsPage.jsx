@@ -22,6 +22,12 @@ export default function RecipientsPage() {
   const [simResult, setSimResult] = useState(null);
   const [simLoading, setSimLoading] = useState(false);
 
+  // Adversarial Attack Simulator state (Phase 6)
+  const [tamperAttackType, setTamperAttackType] = useState('ciphertext_bitflip');
+  const [tamperRunning, setTamperRunning] = useState(false);
+  const [tamperResult, setTamperResult] = useState(null);
+  const [tamperError, setTamperError] = useState(null);
+
   const fetchRecipients = async () => {
     try {
       setLoading(true);
@@ -143,6 +149,24 @@ export default function RecipientsPage() {
       setError(`Local decrypt action failed: ${err.message}`);
     } finally {
       setSimLoading(false);
+    }
+  };
+
+  const handleRunTamperTest = async (attackType) => {
+    const selectedType = attackType || tamperAttackType;
+    try {
+      setTamperRunning(true);
+      setTamperResult(null);
+      setTamperError(null);
+      const res = await apiRequest(
+        `/api/v1/recipient/tamper-test?attack_type=${encodeURIComponent(selectedType)}&recipient_id=${encodeURIComponent(selectedRecipientId || '')}`,
+        { method: 'POST' }
+      );
+      setTamperResult(res);
+    } catch (err) {
+      setTamperError(err.message || 'Tamper simulation failed.');
+    } finally {
+      setTamperRunning(false);
     }
   };
 
@@ -542,6 +566,185 @@ export default function RecipientsPage() {
               }}>
                 {JSON.stringify(simResult.canonical_event, null, 2)}
               </pre>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Adversarial Attack & Fail-Closed Tamper Simulator (Phase 6) */}
+      <div className="panel" style={{
+        padding: '24px',
+        borderRadius: '12px',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        marginBottom: '32px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', color: '#0f172a' }}>
+              🛡️ Adversarial Security &amp; Fail-Closed Tamper Testing (Phase 6)
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
+              Demonstrate live cryptographic defenses under active attack. Proves zero plaintext leakage when tampered.
+            </p>
+          </div>
+          <span style={{
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            padding: '4px 8px',
+            borderRadius: '4px',
+            background: '#e0f2fe',
+            color: '#0369a1',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+          }}>
+            Evaluator Demonstration
+          </span>
+        </div>
+
+        {/* Attack Vector Selector Tabs */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '10px',
+          marginBottom: '20px',
+        }}>
+          {[
+            { id: 'ciphertext_bitflip', label: '💥 Bit-Flip Attack', desc: 'AES-256-GCM AEAD Tag' },
+            { id: 'kem_tamper', label: '⚛️ KEM Tampering', desc: 'ML-KEM-768 Decapsulation' },
+            { id: 'impersonation', label: '🎭 Key Impersonation', desc: 'Recipient Asymmetric Boundary' },
+            { id: 'context_mismatch', label: '🔀 Context Confusion', desc: 'HKDF-SHA-256 Binding' },
+            { id: 'revoked_credential', label: '🚫 Revoked Credential', desc: 'Keystore Status Check' },
+          ].map((item) => {
+            const active = tamperAttackType === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setTamperAttackType(item.id);
+                  handleRunTamperTest(item.id);
+                }}
+                style={{
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: active ? '2px solid #2563eb' : '1px solid #e2e8f0',
+                  background: active ? '#eff6ff' : '#f8fafc',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease-in-out',
+                }}
+              >
+                <div style={{ fontWeight: 600, fontSize: '0.85rem', color: active ? '#1e40af' : '#1e293b' }}>
+                  {item.label}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                  {item.desc}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Action Button */}
+        <div style={{ marginBottom: '20px' }}>
+          <button
+            type="button"
+            disabled={tamperRunning}
+            onClick={() => handleRunTamperTest(tamperAttackType)}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#dc2626',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: 600,
+              cursor: tamperRunning ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 2px 4px rgba(220, 38, 38, 0.2)',
+            }}
+          >
+            {tamperRunning ? 'Simulating Attack Vector...' : '⚡ Trigger Attack Simulation'}
+          </button>
+        </div>
+
+        {tamperError && (
+          <div style={{
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#b91c1c',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            marginBottom: '16px',
+          }}>
+            Simulation Error: {tamperError}
+          </div>
+        )}
+
+        {/* Attack Outcome Verdict Card */}
+        {tamperResult && (
+          <div style={{
+            background: '#f0fdf4',
+            border: '1px solid #86efac',
+            borderRadius: '8px',
+            padding: '20px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '1.5rem' }}>🛡️</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: '#166534' }}>
+                    ATTACK NEUTRALIZED &mdash; {tamperResult.security_verdict}
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#15803d' }}>
+                    {tamperResult.attack_name}
+                  </div>
+                </div>
+              </div>
+              <div style={{
+                textAlign: 'right',
+                background: '#dcfce7',
+                border: '1px solid #bbf7d0',
+                padding: '6px 14px',
+                borderRadius: '6px',
+              }}>
+                <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Plaintext Leaked
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#15803d' }}>
+                  {tamperResult.plaintext_leaked_bytes} Bytes
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: '10px',
+              background: '#ffffff',
+              padding: '14px',
+              borderRadius: '6px',
+              border: '1px solid #dcfce7',
+              fontSize: '0.82rem',
+            }}>
+              <div>
+                <strong style={{ color: '#1e293b' }}>Cryptographic Defense Mechanism:</strong>{' '}
+                <span style={{ color: '#0369a1', fontWeight: 600 }}>{tamperResult.defense_mechanism}</span>
+              </div>
+              <div>
+                <strong style={{ color: '#1e293b' }}>Exception Caught:</strong>{' '}
+                <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', color: '#b91c1c' }}>
+                  {tamperResult.exception_type}
+                </code>
+              </div>
+              <div>
+                <strong style={{ color: '#1e293b' }}>Diagnostic Detail:</strong>{' '}
+                <span style={{ color: '#475569' }}>{tamperResult.exception_detail}</span>
+              </div>
             </div>
           </div>
         )}
