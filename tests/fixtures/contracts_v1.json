@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "recipient": {
+    "recipient_id": "rec-001",
+    "public_key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr...",
+    "key_status": "ACTIVE",
+    "created_at": "2026-11-22T12:00:00Z"
+  },
+  "encrypted_envelope": {
+    "kem_algorithm": "ML-KEM-768",
+    "symmetric_algorithm": "AES-256-GCM",
+    "kdf_algorithm": "HKDF-SHA-256",
+    "envelope_id": "env-001",
+    "document_id": "doc-001",
+    "encrypted_key": "bXlfZW5jcnlwdGVkX2tleQ==",
+    "ciphertext": "bXlfY3lwaGVydGV4dA==",
+    "token_digest": "a3f5c1e9d2b7e4c8f9a6d1b2c3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2"
+  },
+  "ledger_proposal": {
+    "proposal_id": "prop-001",
+    "event": {
+      "event_id": "ev-001",
+      "event_type": "PROPOSAL",
+      "timestamp": "2026-11-22T12:05:00Z"
+    },
+    "document_id": "doc-001",
+    "validator_signatures": [
+      {
+        "validator_id": "val-01",
+        "signature": "c2lnbmF0dXJlMQ=="
+      },
+      {
+        "validator_id": "val-02",
+        "signature": "c2lnbmF0dXJlMg=="
+      }
+    ]
+  },
+  "commit_certificate": {
+    "certificate_id": "cert-001",
+    "proposal_id": "prop-001",
+    "signatures": [
+      {
+        "validator_id": "val-01",
+        "signature": "c2lnbmF0dXJlMQ=="
+      },
+      {
+        "validator_id": "val-02",
+        "signature": "c2lnbmF0dXJlMg=="
+      },
+      {
+        "validator_id": "val-03",
+        "signature": "c2lnbmF0dXJlMw=="
+      }
+    ],
+    "quorum": 2
+  },
+  "investigation_report": {
+    "investigation_id": "inv-001",
+    "document_id": "doc-001",
+    "confidence": 0.94,
+    "diagnostics": "All signatures verified, quorum satisfied, chain integrity intact.",
+    "signature_verified": true,
+    "quorum_verified": true,
+    "chain_verified": true,
+    "generated_at": "2026-11-22T12:30:00Z"
+  }
+}
