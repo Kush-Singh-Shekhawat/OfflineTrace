@@ -127,9 +127,12 @@ class ValidatorSignature(BaseModel):
     signature: str = Field(..., description="Base64‑encoded ML‑DSA signature")
 
 class LedgerEvent(BaseModel):
+    model_config = {"extra": "allow"}
     event_id: str
     event_type: Literal["PROPOSAL", "COMMIT", "REJECTION"]
     timestamp: str
+    token_digest: Optional[str] = Field(default=None, description="SHA3-256 digest of watermark token")
+    recipient_id: Optional[str] = Field(default=None, description="Recipient identifier")
 
 class LedgerProposal(BaseModel):
     proposal_id: str

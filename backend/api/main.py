@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .routes_manifest import router as api_router, legacy_router
 from .contracts import ErrorCode
-from backend.app.api.routes import recipients
+from backend.app.api.routes import recipients, investigations
 
 app = FastAPI(title="OfflineTrace API", version="1.0.0")
 
@@ -29,6 +29,8 @@ app.add_middleware(
 
 # Mount Member A recipient & key management routes
 app.include_router(recipients.router)
+# Mount Member B investigation routes
+app.include_router(investigations.router)
 
 # Mount the frozen route manifest (/api/v1) and legacy routes (/api)
 app.include_router(api_router)

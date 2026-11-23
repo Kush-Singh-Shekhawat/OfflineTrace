@@ -9,10 +9,10 @@
 | **Phase 0** | Team baseline (repo, venv, Python 3.12, Node/Vite, `.gitignore`, scaffolding) | ✅ **Completed** | Baseline verified & operational |
 | **Phase 1** | Contract freeze (crypto algorithms, API schemas, canonical JSON, invariants) | ✅ **Completed** | Interfaces agreed & implemented |
 | **Phase 2** | Independent foundations (A: crypto/KEM/envelopes; B: PDF watermark; C: ledger model) | ✅ **Completed (All)** | All 3 foundations verified |
-| **Phase 3** | Core module tests (A: tamper/wrong key; B: watermark metrics; C: 2-of-3 quorum) | ✅ **Completed (All)** | All 47 tests passing |
-| **Phase 4** | First vertical slice (decrypt → watermark → output hash → canonical event → signature → quorum commit) | 🚀 **Next Up** | Ready for end-to-end slice |
-| **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | ⏳ **Pending** | ✅ **Recipient UI complete and live** |
-| **Phase 6** | P1/P2 enhancements (FEC/redundancy, tamper harness, confidence metrics, export) | ⏳ **Pending** | Not started |
+| **Phase 3** | Core module tests (A: tamper/wrong key; B: watermark metrics; C: 2-of-3 quorum) | ✅ **Completed (All)** | All module test gates pass |
+| **Phase 4** | First vertical slice (decrypt → watermark → output hash → canonical event → signature → quorum commit) | ✅ **Completed (All)** | Full flow passes twice; strict fail-closed release verified |
+| **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | 🚀 **Next Up** | Recipient screen live; investigation flow next |
+| **Phase 6** | P1/P2 enhancements (FEC/redundancy, tamper harness, confidence metrics, export) | ⏳ **Pending** | Scheduled after Phase 5 |
 | **Phase 7** | LAN / offline freeze (1 validator per laptop, 3 laptops, WAN disconnected, persistence, rehearsal) | ⏳ **Pending** | Final release gate |
 
 ## Status by area
@@ -29,6 +29,17 @@
 | Automated tests | All | Scaffold | Add unit/integration/security coverage |
 
 ## Test Execution Log
+
+- **2026-11-23 (Phase 4 Vertical Slice - Integration A+B+C)**: `pytest tests/integration/test_phase4_vertical_slice.py -v`
+  - **3 passed** in 1.50s (Python 3.12.10, pytest-8.4.2)
+  - Invariants verified:
+    - Full vertical slice passes twice consecutively on synthetic PDF fixtures.
+    - Recipient decapsulates ML-KEM-768 envelope and unwraps CEK locally.
+    - Unique session watermark token embedded in PDF by Member B's module.
+    - Output hash computed and signed with recipient ML-DSA-65 private key.
+    - 2-of-3 quorum consensus achieved across 3 independent validator nodes.
+    - Strict fail-closed release gate: No output document released if quorum fails.
+    - Forensic watermark extracted from released PDF matches session token.
 
 - **2026-11-23 (Full Team Integration - Member A, B, C)**: `pytest -v`
   - **47 passed** in 2.62s (Python 3.12.10, pytest-8.4.2)
