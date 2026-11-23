@@ -8,9 +8,9 @@
 |---|---|---|---|
 | **Phase 0** | Team baseline (repo, venv, Python 3.12, Node/Vite, `.gitignore`, scaffolding) | ✅ **Completed** | Baseline verified & operational |
 | **Phase 1** | Contract freeze (crypto algorithms, API schemas, canonical JSON, invariants) | ✅ **Completed** | Interfaces agreed & implemented |
-| **Phase 2** | Independent foundations (A: crypto/KEM/envelopes; B: PDF watermark; C: ledger model) | 🟡 **In Progress (Team)** | ✅ **100% Complete for Member A** |
-| **Phase 3** | Core module tests (A: tamper/wrong key; B: watermark metrics; C: 2-of-3 quorum) | 🟡 **In Progress (Team)** | ✅ **100% Complete for Member A** (32/32 tests pass) |
-| **Phase 4** | First vertical slice (decrypt → watermark → output hash → canonical event → signature → quorum commit) | ⏳ **Pending** | A's crypto service & envelope unwrap are ready |
+| **Phase 2** | Independent foundations (A: crypto/KEM/envelopes; B: PDF watermark; C: ledger model) | ✅ **Completed (All)** | All 3 foundations verified |
+| **Phase 3** | Core module tests (A: tamper/wrong key; B: watermark metrics; C: 2-of-3 quorum) | ✅ **Completed (All)** | All 47 tests passing |
+| **Phase 4** | First vertical slice (decrypt → watermark → output hash → canonical event → signature → quorum commit) | 🚀 **Next Up** | Ready for end-to-end slice |
 | **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | ⏳ **Pending** | ✅ **Recipient UI complete and live** |
 | **Phase 6** | P1/P2 enhancements (FEC/redundancy, tamper harness, confidence metrics, export) | ⏳ **Pending** | Not started |
 | **Phase 7** | LAN / offline freeze (1 validator per laptop, 3 laptops, WAN disconnected, persistence, rehearsal) | ⏳ **Pending** | Final release gate |
@@ -30,16 +30,11 @@
 
 ## Test Execution Log
 
-- **2026-11-23 (Member A)**: `pytest tests/unit/test_crypto.py -v`
-  - 32 passed in 1.48s (Python 3.12.10, pytest-8.4.2)
-  - Modules verified:
-    - `backend/app/crypto/key_derivation.py` (HKDF-SHA-256 context binding & domain separation)
-    - `backend/app/crypto/encryption.py` (AES-256-GCM authenticated payload & fail-closed decryptions)
-    - `backend/app/crypto/kem.py` (ML-KEM-768 FIPS 203 keygen, encaps/decaps round-trip & implicit rejection)
-    - `backend/app/crypto/signatures.py` (ML-DSA-65 FIPS 204 keygen, canonical signing, verification, SHA3-256 fingerprints)
-    - `backend/app/crypto/envelope.py` (1-ciphertext N-envelopes, unwrap, tamper rejection)
-    - `backend/app/crypto/key_manager.py` (encrypted keystore at rest, PBKDF2-HMAC-SHA256, listing, revocation, rotation)
-    - `backend/app/services/recipient_crypto.py` (recipient local boundary, unwrap, document decryption, canonical event signing, token digest computation)
+- **2026-11-23 (Full Team Integration - Member A, B, C)**: `pytest -v`
+  - **47 passed** in 2.62s (Python 3.12.10, pytest-8.4.2)
+  - **Member A (32 tests)**: AES-256-GCM, HKDF-SHA-256, ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204), CEK Envelopes, KeyManager keystore, RecipientCryptoService local boundary.
+  - **Member B (5 tests)**: Watermark embed/extract round-trip, invalid PDF rejection, empty token rejection.
+  - **Member C (10 tests)**: 2-of-3 validator quorum commit & persistence across restart, 1-validator fail closed, replay event rejection, tamper divergence detection, DB isolation, block hash determinism.
 
 ## Integration checklist
 

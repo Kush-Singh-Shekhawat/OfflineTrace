@@ -16,7 +16,7 @@ dependencies = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-pythonpath = ["."]
+pythonpath = [".", "backend"]
 
 [tool.ruff]
 line-length = 100
