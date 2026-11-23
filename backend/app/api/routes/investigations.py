@@ -99,25 +99,7 @@ async def analyze_investigation_base64(req_body: InvestigationJsonRequest) -> In
     return report
 
 
-@router.get("/investigations/{investigation_id}", response_model=InvestigationReport)
-async def get_investigation(investigation_id: str) -> InvestigationReport:
-    """Retrieve report for a previously executed investigation."""
-    if investigation_id in _reports_cache:
-        return _reports_cache[investigation_id]
 
-    try:
-        db = get_db()
-        if db:
-            report = db.get_investigation(investigation_id)
-            if report:
-                return report
-    except Exception:
-        pass
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Investigation '{investigation_id}' not found",
-    )
 
 
 @router.post("/investigations/simulate-preset")
