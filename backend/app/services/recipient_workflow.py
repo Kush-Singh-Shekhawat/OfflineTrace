@@ -172,6 +172,7 @@ class RecipientWorkflowOrchestrator:
                 token_digest=token_digest,
                 recipient_id=recipient_id,
                 signature_b64=recipient_sig_b64,
+                canonical_event=canonical_event,
             ),
             document_id=document_id,
             validator_signatures=[],

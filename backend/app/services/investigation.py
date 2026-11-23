@@ -211,15 +211,14 @@ def investigate_pdf(
     # Step 4: Verify Hash Chain Continuity
     # ----------------------------------------------------------------------
     chain_verified = True
-    prev_hash = "GENESIS"
-    for blk in blocks:
-        if blk["sequence"] == 0:
-            prev_hash = blk["block_hash"]
-            continue
-        if blk["previous_hash"] != prev_hash:
-            chain_verified = False
-            break
-        prev_hash = blk["block_hash"]
+    if blocks:
+        for i, blk in enumerate(blocks):
+            if blk.get("sequence", 0) != i:
+                chain_verified = False
+                break
+            if i > 0 and blk.get("previous_hash") != blocks[i - 1].get("block_hash"):
+                chain_verified = False
+                break
 
     # ----------------------------------------------------------------------
     # Step 5: Verify 2-of-3 Quorum Signatures
@@ -237,16 +236,16 @@ def investigate_pdf(
         try:
             pub_record = key_manager.get_public_record(recipient_id)
             dsa_pk = base64.b64decode(pub_record.dsa_public_key_b64)
-            
-            sig_b64 = matching_proposal.get("event", {}).get("signature_b64")
             raw_event = matching_proposal.get("event", {})
-            if sig_b64 and raw_event:
-                event_to_verify = {k: v for k, v in raw_event.items() if k != "signature_b64"}
-                canonical_bytes = canonical_json_bytes(event_to_verify)
+            sig_b64 = raw_event.get("signature_b64")
+            canonical_ev = raw_event.get("canonical_event")
+
+            if sig_b64 and canonical_ev:
+                canonical_bytes = canonical_json_bytes(canonical_ev)
                 signature_bytes = base64.b64decode(sig_b64)
                 signature_verified = verify_signature(dsa_pk, canonical_bytes, signature_bytes)
             else:
-                signature_verified = True
+                signature_verified = getattr(pub_record, "status", "active") == "active"
         except Exception:
             signature_verified = False
     else:
