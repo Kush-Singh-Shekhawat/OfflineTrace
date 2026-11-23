@@ -11,22 +11,22 @@
 | **Phase 2** | Independent foundations (A: crypto/KEM/envelopes; B: PDF watermark; C: ledger model) | ✅ **Completed (All)** | All 3 foundations verified |
 | **Phase 3** | Core module tests (A: tamper/wrong key; B: watermark metrics; C: 2-of-3 quorum) | ✅ **Completed (All)** | All module test gates pass |
 | **Phase 4** | First vertical slice (decrypt → watermark → output hash → canonical event → signature → quorum commit) | ✅ **Completed (All)** | Full flow passes twice; strict fail-closed release verified |
-| **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | ✅ **Completed** | Full flow verified; all 64 tests passing |
-| **Phase 6** | P1/P2 enhancements (tamper harness, FEC/redundancy, confidence metrics, export) | 🚀 **In Progress** | Phase 6 Cryptographic Tamper Harness created |
-| **Phase 7** | LAN / offline freeze (1 validator per laptop, 3 laptops, WAN disconnected, persistence, rehearsal) | ⏳ **Pending** | Final release gate |
+| **Phase 5** | Investigation and UI integration (A's Recipient screen, B's Investigation screen, C's shell) | ✅ **Completed** | Full flow verified; all tests passing |
+| **Phase 6** | P1/P2 enhancements (tamper harness, FEC/redundancy, confidence metrics, export) | ✅ **Completed** | Tamper Harness (A) + Watermark FEC (B) + Court Dossier (A+B) |
+| **Phase 7** | LAN / offline freeze (1 validator per laptop, 3 laptops, WAN disconnected, rehearsal) | 🚀 **Ready for Demo** | Runbook prepared; multi-laptop rehearsal ready |
 
 ## Status by area
 
-| Area | Owner | Status | Next step |
+| Area | Owner | Status | Details |
 |---|---|---|---|
-| Cryptography and key management | Member A | Complete (Phase 2 & Phase 3) | Ready for Phase 4 integration (first vertical slice) |
-| Recipient screen | Member A | Complete (Frontend Screen) | Ready for team end-to-end integration |
-| PDF watermarking | Member B | Scaffold | Select embedding/extraction approach and test PDFs |
-| Investigation screen | Member B | Scaffold | Build upload and result UI |
-| FastAPI and API contracts | Member C | Scaffold | Wire routes and schemas |
-| Ledger | Member C | Scaffold | Define event schema and verification rules |
-| Shared React integration | Member C | Scaffold | Integrate feature screens and navigation |
-| Automated tests | All | Scaffold | Add unit/integration/security coverage |
+| Cryptography and key management | Member A | ✅ **Complete** | AES-256-GCM, ML-KEM-768, ML-DSA-65, HKDF, envelopes, keystore |
+| Recipient screen & Tamper testing | Member A | ✅ **Complete** | Full roster, simulator, and live adversarial tamper test card |
+| PDF watermarking & FEC | Member B | ✅ **Complete** | Metadata embed/extract + 3x repetition error correction |
+| Investigation screen & Dossier | Member B + A | ✅ **Complete** | PDF analysis, leak verification, Court of Inquiry formal dossier |
+| Document distribution & API | Member C + A | ✅ **Complete** | Multi-recipient KEM envelope generator & document registry |
+| Ledger & Consensus Explorer | Member C | ✅ **Complete** | 2-of-3 quorum cluster, block explorer & validator health |
+| Command Dashboard | Member C | ✅ **Complete** | Live system metrics, air-gap operations banner & quick links |
+| Automated tests | All | ✅ **Complete** | **78 passing tests** across unit, integration, and security |
 
 ## Test Execution Log
 
