@@ -57,17 +57,17 @@ async def dashboard_summary():
 # ---------------------------------------------------------------------------
 # Recipients
 # ---------------------------------------------------------------------------
-@router.post("/recipients", response_model=RecipientResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/recipients", response_model=RecipientResponse, status_code=status.HTTP_201_CREATED, operation_id="register_recipient_placeholder")
 async def register_recipient(payload: RecipientRegisterRequest):
     raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Frozen contract – not implemented")
 
 
-@router.get("/recipients", response_model=List[RecipientResponse])
+@router.get("/recipients", response_model=List[RecipientResponse], operation_id="list_recipients_placeholder")
 async def list_recipients():
     raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Frozen contract – not implemented")
 
 
-@router.post("/recipients/{recipient_id}/keys", status_code=status.HTTP_201_CREATED)
+@router.post("/recipients/{recipient_id}/keys", status_code=status.HTTP_201_CREATED, operation_id="register_recipient_key_placeholder")
 async def register_recipient_key(recipient_id: str, payload: Dict[str, Any]):
     raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Frozen contract – not implemented")
 

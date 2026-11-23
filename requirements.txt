@@ -7,5 +7,6 @@ pypdf>=5,<7
 SQLAlchemy>=2.0,<3.0
 pytest>=8,<9
 httpx>=0.27,<1.0
-kyber-py>=1.2.0
+
+httpx2>=2.0,<3.0
 dilithium-py>=1.5.1
