@@ -125,6 +125,22 @@ class Database:
             )
             """
         )
+        # Investigations – forensic investigation records
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS investigations (
+                investigation_id TEXT PRIMARY KEY,
+                document_id TEXT NOT NULL,
+                investigator_id TEXT NOT NULL,
+                confidence REAL NOT NULL,
+                diagnostics TEXT NOT NULL,
+                signature_verified INTEGER NOT NULL,
+                quorum_verified INTEGER NOT NULL,
+                chain_verified INTEGER NOT NULL,
+                generated_at TEXT NOT NULL
+            )
+            """
+        )
         self.conn.commit()
 
     # ---------------------------------------------------------------------
@@ -304,7 +320,115 @@ class Database:
         }
 
     # ---------------------------------------------------------------------
+    # Investigation helpers
+    # ---------------------------------------------------------------------
+    def insert_investigation(self, report: Any, investigator_id: str = "") -> None:
+        """Insert or update an investigation report."""
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            INSERT OR REPLACE INTO investigations (
+                investigation_id, document_id, investigator_id, confidence,
+                diagnostics, signature_verified, quorum_verified, chain_verified, generated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                report.investigation_id,
+                report.document_id,
+                investigator_id,
+                report.confidence,
+                report.diagnostics,
+                1 if report.signature_verified else 0,
+                1 if report.quorum_verified else 0,
+                1 if report.chain_verified else 0,
+                report.generated_at,
+            ),
+        )
+        self.conn.commit()
+
+    def get_investigation(self, investigation_id: str) -> Any | None:
+        """Retrieve an investigation report by investigation_id."""
+        from ..api.contracts import InvestigationReport
+        cur = self.conn.cursor()
+        cur.execute(
+            "SELECT * FROM investigations WHERE investigation_id = ?",
+            (investigation_id,),
+        )
+        row = cur.fetchone()
+        if row:
+            return InvestigationReport(
+                investigation_id=row["investigation_id"],
+                document_id=row["document_id"],
+                confidence=row["confidence"],
+                diagnostics=row["diagnostics"],
+                signature_verified=bool(row["signature_verified"]),
+                quorum_verified=bool(row["quorum_verified"]),
+                chain_verified=bool(row["chain_verified"]),
+                generated_at=row["generated_at"],
+            )
+        return None
+
+    def has_document(self, document_id: str) -> bool:
+        """Check if a document exists in documents or envelopes tables."""
+        cur = self.conn.cursor()
+        cur.execute("SELECT 1 FROM documents WHERE document_id = ? LIMIT 1", (document_id,))
+        if cur.fetchone():
+            return True
+        cur.execute("SELECT 1 FROM envelopes WHERE document_id = ? LIMIT 1", (document_id,))
+        if cur.fetchone():
+            return True
+        return False
+
+    def get_document(self, document_id: str) -> dict | None:
+        """Return document record as dict or None."""
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM documents WHERE document_id = ?", (document_id,))
+        row = cur.fetchone()
+        return dict(row) if row else None
+
+    def get_envelope(self, document_id: str) -> dict | None:
+        """Return envelope record as dict or None."""
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM envelopes WHERE document_id = ?", (document_id,))
+        row = cur.fetchone()
+        return dict(row) if row else None
+
+    # ---------------------------------------------------------------------
     # Generic utilities
     # ---------------------------------------------------------------------
     def close(self) -> None:
         self.conn.close()
+
+
+# -----------------------------------------------------------------------
+# Database singleton / dependency provider
+# -----------------------------------------------------------------------
+_default_db: Database | None = None
+
+
+def get_db(db_path: str | None = None, node_id: str = "main") -> Database:
+    """Return the active database instance or create a new one."""
+    global _default_db
+    if db_path is not None:
+        return Database(db_path, node_id)
+    if _default_db is None:
+        db_file = os.getenv("OFFLINETRACE_DB", "storage_data/offlinetrace.db")
+        _default_db = Database(db_file, node_id)
+    return _default_db
+
+
+def set_db(db: Database | None) -> None:
+    """Override the active database instance (e.g. for testing)."""
+    global _default_db
+    _default_db = db
+
+
+def reset_global_db(db_path: str = ":memory:", node_id: str = "test") -> Database:
+    """Create a fresh isolated Database for testing."""
+    return Database(db_path, node_id)
+
+
+def get_test_db() -> Database:
+    """Return the test database singleton."""
+    return get_db()
+

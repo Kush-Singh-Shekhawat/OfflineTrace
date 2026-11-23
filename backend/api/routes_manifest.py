@@ -23,6 +23,16 @@ from .contracts import (
     InvestigationRequest,
     InvestigationReport,
 )
+from ..storage.db import get_db
+from ..app.services.investigation import (
+    investigate_document,
+    is_authorized_investigator,
+    UnauthorizedInvestigatorError,
+    UnknownDocumentError,
+    InvalidInvestigationRequestError,
+    DatabaseFailureError,
+    InvestigationServiceError,
+)
 
 # Standard API router with /api/v1 prefix per API_CONTRACTS.md
 router = APIRouter(prefix="/api/v1", tags=["OfflineTrace"])
@@ -126,14 +136,73 @@ async def get_node_health():
 # ---------------------------------------------------------------------------
 # Forensics / Investigations
 # ---------------------------------------------------------------------------
+@router.post("/investigator/verify", response_model=InvestigationReport, status_code=status.HTTP_200_OK)
+async def verify_investigation(payload: InvestigationRequest):
+    """Execute investigation verification workflow.
+
+    Validates:
+    - InvestigationRequest fields.
+    - Investigator authorization.
+    - Document identity.
+    - Validator signatures, 2-of-3 quorum, and hash-chain integrity via investigation service.
+    """
+    if (
+        not payload.investigation_id
+        or not payload.investigation_id.strip()
+        or not payload.document_id
+        or not payload.document_id.strip()
+        or not payload.investigator_id
+        or not payload.investigator_id.strip()
+        or not payload.requested_at
+        or not payload.requested_at.strip()
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid investigation request: all fields must be non-empty",
+        )
+
+    if not is_authorized_investigator(payload.investigator_id):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized investigator",
+        )
+
+    try:
+        db = get_db()
+        report = investigate_document(payload, db=db)
+        return report
+    except UnauthorizedInvestigatorError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+    except UnknownDocumentError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except InvalidInvestigationRequestError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except DatabaseFailureError as exc:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Investigation service exception: {exc}",
+        ) from exc
+
+
 @router.post("/investigations", response_model=InvestigationReport, status_code=status.HTTP_202_ACCEPTED)
 async def investigate(payload: InvestigationRequest):
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Frozen contract – not implemented")
+    return await verify_investigation(payload)
 
 
 @router.get("/investigations/{investigation_id}", response_model=InvestigationReport)
 async def get_investigation(investigation_id: str):
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Frozen contract – not implemented")
+    db = get_db()
+    report = db.get_investigation(investigation_id)
+    if not report:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Investigation '{investigation_id}' not found",
+        )
+    return report
 
 
 # ---------------------------------------------------------------------------
