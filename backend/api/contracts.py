@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import hashlib
 from enum import Enum
-from typing import List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -177,3 +177,11 @@ class InvestigationReport(BaseModel):
     quorum_verified: bool
     chain_verified: bool
     generated_at: str
+
+
+# Eagerly rebuild models to resolve forward annotations
+LedgerEvent.model_rebuild()
+LedgerProposal.model_rebuild()
+LedgerBlock.model_rebuild()
+InvestigationReport.model_rebuild()
+

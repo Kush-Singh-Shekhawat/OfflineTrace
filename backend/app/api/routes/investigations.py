@@ -13,7 +13,7 @@ from backend.api.contracts import InvestigationReport, InvestigationRequest
 from backend.app.crypto.key_manager import KeyManager
 from backend.app.services.investigation import investigate_pdf
 from backend.app.watermark.embed import embed_watermark
-from backend.storage.db import Database
+from backend.storage.db import Database, get_db as get_global_db
 
 router = APIRouter(prefix="/api/v1", tags=["Investigation"])
 
@@ -31,6 +31,12 @@ class InvestigationJsonRequest(BaseModel):
 
 
 def get_db() -> Optional[Database]:
+    try:
+        global_db = get_global_db()
+        if global_db is not None:
+            return global_db
+    except Exception:
+        pass
     if DEFAULT_DB_PATH.exists():
         return Database(str(DEFAULT_DB_PATH), node_id="api-investigator")
     # Check any .db file in storage_data/
@@ -98,7 +104,20 @@ async def get_investigation(investigation_id: str) -> InvestigationReport:
     """Retrieve report for a previously executed investigation."""
     if investigation_id in _reports_cache:
         return _reports_cache[investigation_id]
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Investigation {investigation_id} not found.")
+
+    try:
+        db = get_db()
+        if db:
+            report = db.get_investigation(investigation_id)
+            if report:
+                return report
+    except Exception:
+        pass
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Investigation '{investigation_id}' not found",
+    )
 
 
 @router.post("/investigations/simulate-preset")
