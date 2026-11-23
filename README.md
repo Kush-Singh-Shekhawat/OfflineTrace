@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # OfflineTrace
 
 OfflineTrace is a prototype for secure document distribution, recipient/key management,
@@ -93,5 +92,3 @@ git push -u origin main
 
 Replace the remote URL with your actual GitHub repository URL.
 =======
-# OfflineTrace
->>>>>>> 820e403f417b4a374c4c7389d9eb21f67865e56a
