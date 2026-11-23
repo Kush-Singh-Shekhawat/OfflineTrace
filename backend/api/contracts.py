@@ -64,11 +64,6 @@ class SymmetricAlgorithm(str, Enum):
 
 class KDFAlgorithm(str, Enum):
     HKDF_SHA_256 = "HKDF-SHA-256"
-    INVALID_REQUEST = "INVALID_REQUEST"
-    UNAUTHORIZED = "UNAUTHORIZED"
-    NOT_FOUND = "NOT_FOUND"
-    INTERNAL_ERROR = "INTERNAL_ERROR"
-    BAD_GATEWAY = "BAD_GATEWAY"
 
 # ---------------------------------------------------------------------------
 # Helper utilities – canonical JSON and SHA3‑256 digests
@@ -104,9 +99,13 @@ class RecipientResponse(BaseModel):
 
 class EncryptedEnvelope(BaseModel):
     envelope_id: str
+    document_id: str = Field(..., description="ID of the document this envelope protects")
     encrypted_key: str = Field(..., description="Base64‑encoded CEK wrapped for the recipient")
     ciphertext: str = Field(..., description="Base64‑encoded encrypted document payload")
     token_digest: str = Field(..., description="SHA3‑256 hex digest of the watermark token")
+    kem_algorithm: KEMAlgorithm = Field(default=KEMAlgorithm.ML_KEM_768, description="Key encapsulation algorithm")
+    symmetric_algorithm: SymmetricAlgorithm = Field(default=SymmetricAlgorithm.AES_256_GCM, description="Symmetric encryption algorithm")
+    kdf_algorithm: KDFAlgorithm = Field(default=KDFAlgorithm.HKDF_SHA_256, description="Key derivation function algorithm")
 
 class DocumentUploadResponse(BaseModel):
     document_id: str
@@ -143,6 +142,7 @@ class CommitCertificate(BaseModel):
     proposal_id: str
     signatures: List[ValidatorSignature]
     quorum: int = Field(..., ge=1, description="Number of signatures required for acceptance")
+    block_hash: str = Field(default="", description="SHA3-256 hash of the block committed")
 
 class LedgerBlock(BaseModel):
     block_id: str
@@ -154,8 +154,10 @@ class LedgerBlock(BaseModel):
 class NodeHealthResponse(BaseModel):
     node_id: str
     status: Literal["HEALTHY", "UNHEALTHY", "UNKNOWN"]
-    uptime_seconds: int
-    last_heartbeat: str
+    uptime_seconds: int = Field(default=0, description="Node uptime in seconds")
+    last_heartbeat: str = Field(default="", description="ISO-8601 UTC timestamp")
+    chain_height: int = Field(default=0, description="Current height of the committed block chain")
+    latest_hash: str = Field(default="", description="SHA3-256 hash of the latest committed block")
 
 class InvestigationRequest(BaseModel):
     investigation_id: str

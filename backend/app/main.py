@@ -1,36 +1,16 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+"""Main entrypoint for backend.app - delegates to backend.api.main.app."""
+from __future__ import annotations
 
-from .api.routes import recipients
-from .crypto.key_manager import KeyManager
+import sys
+from pathlib import Path
 
-app = FastAPI(title="OfflineTrace API", version="0.1.0")
-key_manager = KeyManager()
+# Ensure workspace root and backend directory are in sys.path
+root_dir = Path(__file__).resolve().parent.parent.parent
+backend_dir = root_dir / "backend"
+for p in (str(root_dir), str(backend_dir)):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_credentials=False,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
-)
+from backend.api.main import app  # noqa: E402
 
-app.include_router(recipients.router)
-
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok", "service": "OfflineTrace"}
-
-@app.get("/api/v1/dashboard/summary")
-def dashboard_summary() -> dict[str, object]:
-    recipients_count = len(key_manager.list_public_records())
-    return {
-        "documents_total": 0,
-        "recipients_total": recipients_count,
-        "investigations_total": 0,
-        "ledger_status": "not_configured",
-    }
-
-@app.get("/api/v1/ledger/status")
-def ledger_status() -> dict[str, str]:
-    return {"status": "not_configured", "message": "Ledger implementation is pending."}
+__all__ = ["app"]

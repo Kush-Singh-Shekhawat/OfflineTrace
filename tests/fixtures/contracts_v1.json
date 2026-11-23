@@ -11,6 +11,7 @@
     "symmetric_algorithm": "AES-256-GCM",
     "kdf_algorithm": "HKDF-SHA-256",
     "envelope_id": "env-001",
+    "document_id": "doc-001",
     "encrypted_key": "bXlfZW5jcnlwdGVkX2tleQ==",
     "ciphertext": "bXlfY3lwaGVydGV4dA==",
     "token_digest": "a3f5c1e9d2b7e4c8f9a6d1b2c3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2"
