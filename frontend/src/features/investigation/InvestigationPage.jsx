@@ -9,6 +9,11 @@ export default function InvestigationPage() {
   const [error, setError] = useState(null);
   const [report, setReport] = useState(null);
 
+  // Court of Inquiry Dossier modal state
+  const [dossierModal, setDossierModal] = useState(false);
+  const [dossierLoading, setDossierLoading] = useState(false);
+  const [dossierData, setDossierData] = useState(null);
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
@@ -79,6 +84,31 @@ export default function InvestigationPage() {
     const a = document.createElement('a');
     a.href = url;
     a.download = `Forensic_Report_${report.investigation_id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFetchDossier = async () => {
+    if (!report) return;
+    try {
+      setDossierLoading(true);
+      const data = await apiRequest(`/api/v1/investigations/${report.investigation_id}/dossier`);
+      setDossierData(data);
+      setDossierModal(true);
+    } catch (err) {
+      alert(`Failed to compile Court of Inquiry dossier: ${err.message}`);
+    } finally {
+      setDossierLoading(false);
+    }
+  };
+
+  const downloadDossierJson = () => {
+    if (!dossierData) return;
+    const blob = new Blob([JSON.stringify(dossierData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${dossierData.dossier_id}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -378,21 +408,232 @@ export default function InvestigationPage() {
             </div>
           </div>
 
-          <button
-            onClick={downloadReport}
-            style={{
-              padding: '10px 18px',
-              backgroundColor: '#1e293b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-            }}
-          >
-            💾 Export Evidence Report (JSON)
-          </button>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              onClick={handleFetchDossier}
+              disabled={dossierLoading}
+              style={{
+                padding: '10px 18px',
+                backgroundColor: '#1e3a8a',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: dossierLoading ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 2px 4px rgba(30, 58, 138, 0.2)',
+              }}
+            >
+              {dossierLoading ? 'Compiling Dossier...' : '🏛️ Generate Court of Inquiry Dossier'}
+            </button>
+
+            <button
+              onClick={downloadReport}
+              style={{
+                padding: '10px 18px',
+                backgroundColor: '#334155',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+              }}
+            >
+              💾 Export Evidence Summary (JSON)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Court of Inquiry Dossier Modal */}
+      {dossierModal && dossierData && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            maxWidth: '850px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            padding: '32px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            border: '2px solid #cbd5e1',
+          }}>
+            {/* Dossier Military Heading */}
+            <div style={{ borderBottom: '2px solid #0f172a', paddingBottom: '16px', marginBottom: '20px', textAlign: 'center' }}>
+              <div style={{
+                display: 'inline-block',
+                background: '#dc2626',
+                color: '#ffffff',
+                fontWeight: 800,
+                fontSize: '0.75rem',
+                padding: '2px 10px',
+                borderRadius: '4px',
+                letterSpacing: '0.1em',
+                marginBottom: '8px',
+              }}>
+                {dossierData.classification}
+              </div>
+              <h2 style={{ margin: '4px 0', fontSize: '1.4rem', color: '#0f172a', letterSpacing: '0.02em' }}>
+                COURT OF INQUIRY FORENSIC ATTRIBUTION DOSSIER
+              </h2>
+              <div style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>
+                {dossierData.authority} &bull; {dossierData.jurisdiction}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
+                Dossier Identifier: <code>{dossierData.dossier_id}</code> | Time of Generation: {dossierData.generated_at}
+              </div>
+            </div>
+
+            {/* Verdict Box */}
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              padding: '16px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Forensic Attribution Verdict
+                </div>
+                <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                  {dossierData.forensic_verdict} (Confidence: {(dossierData.confidence_score * 100).toFixed(0)}%)
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#334155', marginTop: '4px' }}>
+                  {dossierData.diagnostics}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '6px 14px',
+                  borderRadius: '999px',
+                  background: dossierData.confidence_score >= 0.95 ? '#dcfce7' : '#fef3c7',
+                  color: dossierData.confidence_score >= 0.95 ? '#15803d' : '#b45309',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                }}>
+                  {dossierData.confidence_score >= 0.95 ? 'ATTRIBUTION CONFIRMED' : 'FURTHER INQUIRY REQUIRED'}
+                </span>
+              </div>
+            </div>
+
+            {/* Evidence & Attributed Recipient Details */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#1e293b' }}>
+                  👤 Attributed Recipient Credentials
+                </h4>
+                <div style={{ fontSize: '0.82rem', color: '#334155', display: 'grid', gap: '6px' }}>
+                  <div><strong>Recipient ID:</strong> <code>{dossierData.cryptographic_proof_matrix.attributed_recipient.recipient_id}</code></div>
+                  <div><strong>Name / Unit:</strong> {dossierData.cryptographic_proof_matrix.attributed_recipient.name_or_unit}</div>
+                  <div><strong>PQC Signature Algorithm:</strong> {dossierData.cryptographic_proof_matrix.attributed_recipient.dsa_algorithm}</div>
+                  <div><strong>DSA Key Fingerprint:</strong> <br/><code style={{ fontSize: '0.75rem' }}>{dossierData.cryptographic_proof_matrix.attributed_recipient.dsa_public_fingerprint || 'N/A'}</code></div>
+                </div>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#1e293b' }}>
+                  🏛️ Consensus &amp; Immutable Ledger Proof
+                </h4>
+                <div style={{ fontSize: '0.82rem', color: '#334155', display: 'grid', gap: '6px' }}>
+                  <div><strong>Consensus Quorum:</strong> {dossierData.cryptographic_proof_matrix.consensus_quorum.consensus_model}</div>
+                  <div><strong>Validators Signed:</strong> {dossierData.cryptographic_proof_matrix.consensus_quorum.validators_committed.join(', ')}</div>
+                  <div><strong>Committed Block ID:</strong> <code>{dossierData.cryptographic_proof_matrix.immutable_ledger.block_id}</code> (Seq: {dossierData.cryptographic_proof_matrix.immutable_ledger.block_sequence})</div>
+                  <div><strong>Block Hash:</strong> <br/><code style={{ fontSize: '0.75rem' }}>{dossierData.cryptographic_proof_matrix.immutable_ledger.block_hash}</code></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Digital Seal */}
+            <div style={{
+              background: '#042f2e',
+              color: '#a7f3d0',
+              padding: '14px 18px',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              fontSize: '0.8rem',
+            }}>
+              <div style={{ fontWeight: 700, color: '#34d399', marginBottom: '4px' }}>
+                🔒 SHA3-256 Tamper-Evident Digital Seal:
+              </div>
+              <code style={{ fontSize: '0.78rem', wordBreak: 'break-all' }}>
+                {dossierData.digital_seal_sha3_256}
+              </code>
+              <div style={{ fontSize: '0.72rem', color: '#6ee7b7', marginTop: '4px' }}>
+                {dossierData.admissibility_statement}
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button
+                onClick={() => window.print()}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#0284c7',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                🖨️ Print Formal Dossier
+              </button>
+              <button
+                onClick={downloadDossierJson}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#0f172a',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                💾 Download Sealed JSON
+              </button>
+              <button
+                onClick={() => setDossierModal(false)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>
