@@ -142,6 +142,7 @@ class CommitCertificate(BaseModel):
     proposal_id: str
     signatures: List[ValidatorSignature]
     quorum: int = Field(..., ge=1, description="Number of signatures required for acceptance")
+    block_hash: str = Field(default="", description="SHA3-256 hash of the block committed")
 
 class LedgerBlock(BaseModel):
     block_id: str
@@ -153,8 +154,10 @@ class LedgerBlock(BaseModel):
 class NodeHealthResponse(BaseModel):
     node_id: str
     status: Literal["HEALTHY", "UNHEALTHY", "UNKNOWN"]
-    uptime_seconds: int
-    last_heartbeat: str
+    uptime_seconds: int = Field(default=0, description="Node uptime in seconds")
+    last_heartbeat: str = Field(default="", description="ISO-8601 UTC timestamp")
+    chain_height: int = Field(default=0, description="Current height of the committed block chain")
+    latest_hash: str = Field(default="", description="SHA3-256 hash of the latest committed block")
 
 class InvestigationRequest(BaseModel):
     investigation_id: str

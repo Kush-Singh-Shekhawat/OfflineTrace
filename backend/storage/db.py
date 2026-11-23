@@ -38,6 +38,8 @@ class Database:
     def __init__(self, db_path: str, node_id: str) -> None:
         self.node_id = node_id
         self.db_path = Path(db_path)
+        if not self.db_path.parent.exists():
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
         self._migrate()
@@ -52,7 +54,6 @@ class Database:
             """
             CREATE TABLE IF NOT EXISTS recipients (
                 recipient_id TEXT PRIMARY KEY,
-                public_key TEXT DEFAULT "",
                 key_status TEXT NOT NULL,
                 created_at TEXT NOT NULL
             )
@@ -100,12 +101,13 @@ class Database:
             )
             """
         )
-        # Proposals (optional – stored as JSON for debugging).
+        # Proposals (stored as JSON for record and replay checking).
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS proposals (
                 proposal_id TEXT PRIMARY KEY,
                 block_id TEXT NOT NULL,
+                event_id TEXT DEFAULT "",
                 payload TEXT NOT NULL,
                 FOREIGN KEY (block_id) REFERENCES ledger_blocks(block_id)
             )
@@ -200,6 +202,7 @@ class Database:
         The block ``sequence`` is derived from the current chain height.
         """
         sequence = self.chain_height()
+        raw_json = block.model_dump_json()
         cur = self.conn.cursor()
         cur.execute(
             """
@@ -214,10 +217,37 @@ class Database:
                 block.merkle_root,
                 block.status.value,
                 block_hash,
-                block.json(),
+                raw_json,
             ),
         )
+        # Also index proposals for fast lookup and replay prevention
+        for prop in block.proposals:
+            cur.execute(
+                """
+                INSERT OR REPLACE INTO proposals (proposal_id, block_id, event_id, payload)
+                VALUES (?, ?, ?, ?)
+                """,
+                (
+                    prop.proposal_id,
+                    block.block_id,
+                    prop.event.event_id,
+                    prop.model_dump_json(),
+                ),
+            )
         self.conn.commit()
+
+    def has_event_id(self, event_id: str) -> bool:
+        """Check whether an event_id is already committed in the ledger."""
+        cur = self.conn.cursor()
+        cur.execute("SELECT 1 FROM proposals WHERE event_id = ? LIMIT 1", (event_id,))
+        if cur.fetchone():
+            return True
+        # Fallback check inside raw_json for backwards compatibility
+        cur.execute(
+            "SELECT 1 FROM ledger_blocks WHERE raw_json LIKE ? LIMIT 1",
+            (f'%"{event_id}"%',),
+        )
+        return cur.fetchone() is not None
 
     def latest_block(self) -> Tuple[int, str] | None:
         """Return ``(sequence, block_hash)`` of the most recent block or ``None``."""
@@ -232,6 +262,46 @@ class Database:
         cur = self.conn.cursor()
         cur.execute("SELECT COUNT(*) FROM ledger_blocks")
         return cur.fetchone()[0]
+
+    def get_blocks(self) -> List[dict]:
+        """Return all committed blocks ordered by sequence."""
+        cur = self.conn.cursor()
+        cur.execute(
+            "SELECT block_id, sequence, previous_hash, merkle_root, status, block_hash, raw_json FROM ledger_blocks ORDER BY sequence ASC"
+        )
+        rows = cur.fetchall()
+        blocks = []
+        for r in rows:
+            blocks.append({
+                "block_id": r["block_id"],
+                "sequence": r["sequence"],
+                "previous_hash": r["previous_hash"],
+                "merkle_root": r["merkle_root"],
+                "status": r["status"],
+                "block_hash": r["block_hash"],
+                "data": json.loads(r["raw_json"]),
+            })
+        return blocks
+
+    def get_block(self, block_id: str) -> dict | None:
+        """Return a single block by block_id or None."""
+        cur = self.conn.cursor()
+        cur.execute(
+            "SELECT block_id, sequence, previous_hash, merkle_root, status, block_hash, raw_json FROM ledger_blocks WHERE block_id = ?",
+            (block_id,),
+        )
+        r = cur.fetchone()
+        if not r:
+            return None
+        return {
+            "block_id": r["block_id"],
+            "sequence": r["sequence"],
+            "previous_hash": r["previous_hash"],
+            "merkle_root": r["merkle_root"],
+            "status": r["status"],
+            "block_hash": r["block_hash"],
+            "data": json.loads(r["raw_json"]),
+        }
 
     # ---------------------------------------------------------------------
     # Generic utilities
