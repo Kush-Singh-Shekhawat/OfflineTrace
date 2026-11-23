@@ -8,7 +8,7 @@ defined in ``backend.api.contracts`` but do **not** modify the contract file.
 from __future__ import annotations
 
 import json
-from typing import List, Tuple
+from typing import Any, List, Tuple, Union
 
 from ..api.contracts import (
     LedgerBlock,
@@ -102,3 +102,40 @@ def verify_block_integrity(
     }
     recomputed = sha3_256_hex(canonical_json_bytes(payload))
     return recomputed == stored_hash
+
+
+def verify_chain_integrity(chain: List[Any]) -> bool:
+    """Verify hash-link continuity, sequence monotonicity, and block integrity for an entire chain.
+
+    Accepts:
+    - List of dicts (as returned by Database.get_blocks())
+    - Or List of tuples: (LedgerBlock, stored_hash, sequence)
+
+    Returns True if valid, False otherwise.
+    """
+    if not chain:
+        return True
+
+    expected_prev = "0" * 64
+    for i, item in enumerate(chain):
+        if isinstance(item, dict):
+            seq = item["sequence"]
+            prev_hash = item["previous_hash"]
+            stored_hash = item["block_hash"]
+            block_data = item.get("data") or item
+            block = LedgerBlock.model_validate(block_data)
+        elif isinstance(item, tuple):
+            block, stored_hash, seq = item
+            prev_hash = block.previous_hash
+        else:
+            return False
+
+        if seq != i:
+            return False
+        if prev_hash != expected_prev:
+            return False
+        if not verify_block_integrity(block, stored_hash, expected_prev, seq):
+            return False
+        expected_prev = stored_hash
+
+    return True
