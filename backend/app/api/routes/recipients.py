@@ -86,6 +86,7 @@ def delete_recipient(recipient_id: str) -> Dict[str, Any]:
 
 
 @router.post("/recipient/decrypt", response_model=DecryptActionResponse)
+@router.post("/recipients/decrypt", response_model=DecryptActionResponse, include_in_schema=False)
 def decrypt_recipient_document(req: DecryptActionRequest) -> DecryptActionResponse:
     """Execute recipient-local decryption and provenance event signing."""
     try:
@@ -120,6 +121,7 @@ def decrypt_recipient_document(req: DecryptActionRequest) -> DecryptActionRespon
 
 
 @router.post("/recipient/simulate-envelope")
+@router.post("/recipients/simulate-envelope", include_in_schema=False)
 def simulate_test_envelope(recipient_id: str, document_title: str = "Synthetic Mission Brief") -> Dict[str, Any]:
     """Demo helper: Generates a test encrypted payload and recipient envelope."""
     try:
@@ -156,6 +158,7 @@ def simulate_test_envelope(recipient_id: str, document_title: str = "Synthetic M
 
 
 @router.post("/recipient/tamper-test")
+@router.post("/recipients/tamper-test", include_in_schema=False)
 def simulate_tamper_attack(attack_type: str, recipient_id: Optional[str] = None) -> Dict[str, Any]:
     """Execute live cryptographic tamper attacks and demonstrate fail-closed invariant."""
     records = key_manager.list_public_records()

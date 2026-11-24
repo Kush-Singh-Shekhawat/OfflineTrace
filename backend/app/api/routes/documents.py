@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 from datetime import datetime, timezone
 from io import BytesIO
+import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -106,8 +107,19 @@ async def upload_and_protect_document(
     if not pdf_bytes:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Document payload is empty.")
 
-    # 2. Parse selected recipients
-    target_recipients = [r.strip() for r in recipient_ids.split(",") if r.strip()]
+    # 2. Parse selected recipients (supports JSON list or comma-separated string)
+    target_recipients = []
+    if recipient_ids:
+        raw_str = recipient_ids.strip()
+        if raw_str.startswith("[") and raw_str.endswith("]"):
+            try:
+                parsed = json.loads(raw_str)
+                if isinstance(parsed, list):
+                    target_recipients = [str(r).strip() for r in parsed if str(r).strip()]
+            except Exception:
+                pass
+        if not target_recipients:
+            target_recipients = [r.strip().strip('"').strip("'") for r in raw_str.split(",") if r.strip()]
     if not target_recipients:
         # Default to first active recipient
         records = key_manager.list_public_records()

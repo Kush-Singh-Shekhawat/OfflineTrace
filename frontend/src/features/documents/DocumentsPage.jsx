@@ -68,7 +68,7 @@ export default function DocumentsPage() {
 
       const formData = new FormData();
       formData.append('title', title.trim());
-      formData.append('recipient_ids', JSON.stringify(selectedRecipientIds));
+      formData.append('recipient_ids', selectedRecipientIds.join(','));
       if (selectedFile) {
         formData.append('file', selectedFile);
       }

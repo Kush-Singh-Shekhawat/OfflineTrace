@@ -320,7 +320,10 @@ class KeyManager:
     def delete_recipient(self, recipient_id: str) -> None:
         """Purge a recipient record and their local key directory."""
         r_dir = self._recipient_dir(recipient_id)
-        if not r_dir.exists():
+        pub_file = r_dir / "public_record.json"
+        if not pub_file.exists():
+            import shutil
+            shutil.rmtree(r_dir, ignore_errors=True)
             raise KeyManagerError(f"Recipient '{recipient_id}' not found.")
         import shutil
-        shutil.rmtree(r_dir)
+        shutil.rmtree(r_dir, ignore_errors=True)
