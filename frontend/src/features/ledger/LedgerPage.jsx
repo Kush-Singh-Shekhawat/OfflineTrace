@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../services/apiClient.js';
+import { Network, ShieldCheck, Cpu, RefreshCw, CheckCircle2, ChevronDown, ChevronUp, Layers, Hash } from '../../components/Icons.jsx';
 
 export default function LedgerPage() {
   const [chain, setChain] = useState([]);
@@ -41,51 +42,77 @@ export default function LedgerPage() {
   }, []);
 
   return (
-    <section style={{ maxWidth: '1080px', margin: '0 auto', fontFamily: 'inherit' }}>
-      <header style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '1.8rem', margin: '0 0 6px 0', color: '#0f172a' }}>
-          Immutable Distributed Ledger Explorer
-        </h2>
-        <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
-          Member C Component — 2-of-3 Byzantine Fault Tolerant consensus blocks, SHA3-256 hash chains, and validator signatures.
-        </p>
+    <section style={{ maxWidth: '1180px', margin: '0 auto', fontFamily: 'inherit' }}>
+      <header style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <Network size={24} color="#00f0ff" />
+            <h2 style={{ fontSize: '1.85rem', margin: 0, color: '#ffffff', fontWeight: 800, letterSpacing: '0.04em' }}>
+              DISTRIBUTED CONSENSUS LEDGER
+            </h2>
+          </div>
+          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.92rem' }}>
+            Byzantine Fault Tolerant 2-of-3 Quorum Consensus &bull; SHA3-256 Hash Chain &bull; ML-DSA-65 Validator Signatures
+          </p>
+        </div>
+
+        <button
+          onClick={fetchLedgerData}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(0, 240, 255, 0.1)',
+            border: '1px solid rgba(0, 240, 255, 0.35)',
+            color: '#00f0ff',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            fontSize: '0.82rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)'
+          }}
+        >
+          <RefreshCw size={14} className={loading ? 'pulse-beacon' : ''} />
+          <span>SYNC LEDGER</span>
+        </button>
       </header>
 
       {/* Consensus Integrity Banner */}
       <div style={{
-        backgroundColor: '#f0fdf4',
-        border: '1px solid #bbf7d0',
-        borderRadius: '8px',
-        padding: '16px',
-        marginBottom: '24px',
+        background: 'rgba(16, 185, 129, 0.08)',
+        border: '1px solid rgba(16, 185, 129, 0.3)',
+        borderRadius: '10px',
+        padding: '18px 22px',
+        marginBottom: '26px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '12px',
+        gap: '16px',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '1.5rem' }}>⛓️</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <ShieldCheck size={26} color="#34d399" style={{ flexShrink: 0 }} />
           <div>
-            <div style={{ fontWeight: 700, color: '#166534', fontSize: '0.95rem' }}>
-              Consensus Model: 2-of-3 Byzantine Quorum &bull; SHA3-256 Hash Chain
+            <div style={{ fontWeight: 800, color: '#ffffff', fontSize: '0.98rem' }}>
+              Consensus Protocol: 2-of-3 Byzantine Quorum &bull; SHA3-256 Hash Chain
             </div>
-            <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '2px' }}>
-              Every committed block requires matching signatures from at least 2 distinct independent validator nodes.
+            <div style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '3px' }}>
+              Every committed block strictly requires matching ML-DSA-65 signatures from at least 2 distinct physical validator nodes.
             </div>
           </div>
         </div>
 
         {statusInfo && (
-          <div style={{ display: 'flex', gap: '16px', fontSize: '0.85rem' }}>
+          <div style={{ display: 'flex', gap: '20px', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
             <div>
-              <span style={{ color: '#475569' }}>Chain Height:</span>{' '}
-              <strong style={{ color: '#0f172a' }}>{statusInfo.chain_height} Blocks</strong>
+              <span style={{ color: '#64748b' }}>HEIGHT:</span>{' '}
+              <strong style={{ color: '#00f0ff' }}>{statusInfo.chain_height} BLOCKS</strong>
             </div>
             <div>
-              <span style={{ color: '#475569' }}>Continuity:</span>{' '}
-              <strong style={{ color: statusInfo.chain_continuity_verified ? '#15803d' : '#b91c1c' }}>
-                {statusInfo.chain_continuity_verified ? '✅ Verified Intact' : '❌ Broken'}
+              <span style={{ color: '#64748b' }}>CONTINUITY:</span>{' '}
+              <strong style={{ color: statusInfo.chain_continuity_verified ? '#34d399' : '#ef4444' }}>
+                {statusInfo.chain_continuity_verified ? 'CRYPTOGRAPHICALLY SEALED' : 'CHAIN COMPROMISED'}
               </strong>
             </div>
           </div>
@@ -94,48 +121,52 @@ export default function LedgerPage() {
 
       {error && (
         <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-          color: '#991b1b',
+          backgroundColor: 'rgba(239, 68, 68, 0.12)',
+          border: '1px solid rgba(239, 68, 68, 0.35)',
+          borderRadius: '10px',
+          padding: '14px 18px',
+          marginBottom: '22px',
+          color: '#f87171',
           fontSize: '0.9rem',
+          fontFamily: 'var(--font-mono)'
         }}>
-          <strong>Error:</strong> {error}
+          ALERT: {error}
         </div>
       )}
 
       {/* 3 Validator Cluster Node Cards */}
-      <h3 style={{ fontSize: '1.15rem', color: '#1e293b', marginBottom: '12px' }}>
-        🏛️ Independent Validator Nodes (3-Node Cluster)
+      <h3 style={{ fontSize: '1.05rem', color: '#e2e8f0', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.04em' }}>
+        <Cpu size={16} color="#00f0ff" />
+        INDEPENDENT VALIDATOR CLUSTER (3-NODE BYZANTINE FAULT TOLERANCE)
       </h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '32px' }}>
         {nodes.map(n => (
           <div key={n.node_id} style={{
-            background: '#ffffff',
+            background: 'rgba(13, 20, 36, 0.85)',
             borderRadius: '10px',
-            border: '1px solid #e2e8f0',
-            padding: '16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            border: '1px solid rgba(56, 189, 248, 0.25)',
+            padding: '18px 20px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{n.node_id.toUpperCase()}</strong>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <strong style={{ fontSize: '0.98rem', color: '#ffffff', fontFamily: 'var(--font-mono)' }}>{n.node_id.toUpperCase()}</strong>
               <span style={{
-                fontSize: '0.72rem',
-                padding: '2px 8px',
+                fontSize: '0.7rem',
+                padding: '3px 8px',
                 borderRadius: '4px',
-                fontWeight: 700,
-                background: '#dcfce7',
-                color: '#15803d',
+                fontWeight: 800,
+                background: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                color: '#34d399',
+                fontFamily: 'var(--font-mono)'
               }}>
-                {n.status}
+                {n.status.toUpperCase()}
               </span>
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'grid', gap: '4px' }}>
-              <div>URL: <code>{n.url}</code></div>
-              <div>Algorithm: <span style={{ color: '#0284c7', fontWeight: 600 }}>{n.pqc_algorithm}</span></div>
-              <div>Role: {n.role}</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'grid', gap: '6px', fontFamily: 'var(--font-mono)' }}>
+              <div><span style={{ color: '#64748b' }}>SOCKET:</span> <code style={{ color: '#38bdf8' }}>{n.url}</code></div>
+              <div><span style={{ color: '#64748b' }}>DSA SUITE:</span> <span style={{ color: '#34d399', fontWeight: 700 }}>{n.pqc_algorithm}</span></div>
+              <div><span style={{ color: '#64748b' }}>ROLE:</span> {n.role.toUpperCase()}</div>
             </div>
           </div>
         ))}
@@ -143,119 +174,116 @@ export default function LedgerPage() {
 
       {/* Committed Blocks Timeline */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '1.15rem', color: '#1e293b', margin: 0 }}>
-          📦 Committed Ledger Blocks ({chain.length})
+        <h3 style={{ fontSize: '1.05rem', color: '#e2e8f0', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.04em' }}>
+          <Layers size={16} color="#00f0ff" />
+          IMMUTABLE BLOCK CHAIN TIMELINE ({chain.length} BLOCKS)
         </h3>
-        <button
-          onClick={fetchLedgerData}
-          style={{
-            padding: '6px 12px',
-            background: '#f1f5f9',
-            border: '1px solid #cbd5e1',
-            borderRadius: '6px',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          🔄 Refresh Chain
-        </button>
       </div>
 
       <div style={{ display: 'grid', gap: '16px', marginBottom: '32px' }}>
         {chain.length === 0 ? (
-          <div style={{ background: '#ffffff', padding: '32px', textAlign: 'center', borderRadius: '12px', border: '1px solid #e2e8f0', color: '#64748b' }}>
-            No committed blocks currently recorded.
+          <div style={{ background: 'rgba(13, 20, 36, 0.85)', padding: '40px', textAlign: 'center', borderRadius: '12px', border: '1px solid rgba(56, 189, 248, 0.2)', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+            NO COMMITTED BLOCKS RECORDED IN CLUSTER STORAGE.
           </div>
         ) : (
-          chain.map((blk, idx) => {
+          chain.map((blk) => {
             const isExpanded = expandedBlockId === blk.block_id;
             return (
               <div
                 key={blk.block_id}
                 style={{
-                  background: '#ffffff',
+                  background: 'rgba(13, 20, 36, 0.85)',
                   borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
-                  padding: '20px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                  transition: 'all 0.15s ease-in-out',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  padding: '20px 24px',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{
-                      background: '#0f172a',
-                      color: '#ffffff',
+                      background: 'rgba(0, 240, 255, 0.15)',
+                      border: '1px solid rgba(0, 240, 255, 0.4)',
+                      color: '#00f0ff',
                       fontWeight: 800,
-                      fontSize: '0.8rem',
+                      fontSize: '0.78rem',
                       padding: '4px 8px',
                       borderRadius: '4px',
+                      fontFamily: 'var(--font-mono)'
                     }}>
-                      #{blk.sequence}
+                      BLOCK #{blk.sequence}
                     </span>
-                    <strong style={{ fontSize: '1rem', color: '#0f172a' }}>{blk.block_id}</strong>
+                    <strong style={{ fontSize: '1rem', color: '#ffffff', fontFamily: 'var(--font-mono)' }}>{blk.block_id}</strong>
                   </div>
                   <span style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
                     padding: '3px 8px',
                     borderRadius: '4px',
-                    background: '#dcfce7',
-                    color: '#15803d',
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    border: '1px solid rgba(16, 185, 129, 0.35)',
+                    color: '#34d399',
+                    fontFamily: 'var(--font-mono)'
                   }}>
-                    {blk.status}
+                    {blk.status.toUpperCase()}
                   </span>
                 </div>
 
-                <div style={{ display: 'grid', gap: '6px', fontSize: '0.82rem', color: '#334155' }}>
+                <div style={{ display: 'grid', gap: '8px', fontSize: '0.8rem', color: '#cbd5e1', fontFamily: 'var(--font-mono)' }}>
                   <div>
-                    <strong style={{ color: '#475569' }}>Block Hash (SHA3-256):</strong>{' '}
-                    <code style={{ fontSize: '0.78rem', color: '#0284c7' }}>{blk.block_hash}</code>
+                    <span style={{ color: '#64748b' }}>BLOCK HASH (SHA3-256):</span>{' '}
+                    <code style={{ color: '#00f0ff' }}>{blk.block_hash}</code>
                   </div>
                   <div>
-                    <strong style={{ color: '#475569' }}>Previous Hash:</strong>{' '}
-                    <code style={{ fontSize: '0.78rem', color: '#64748b' }}>{blk.previous_hash}</code>
+                    <span style={{ color: '#64748b' }}>PREVIOUS HASH:</span>{' '}
+                    <code style={{ color: '#94a3b8' }}>{blk.previous_hash}</code>
                   </div>
                   <div>
-                    <strong style={{ color: '#475569' }}>Merkle Root:</strong>{' '}
-                    <code style={{ fontSize: '0.78rem' }}>{blk.merkle_root}</code>
+                    <span style={{ color: '#64748b' }}>MERKLE ROOT:</span>{' '}
+                    <code style={{ color: '#cbd5e1' }}>{blk.merkle_root}</code>
                   </div>
                   <div>
-                    <strong style={{ color: '#475569' }}>Committed Proposals:</strong>{' '}
-                    <span>{blk.proposals_count} Verified Event(s)</span>
+                    <span style={{ color: '#64748b' }}>COMMITTED PROPOSALS:</span>{' '}
+                    <span style={{ color: '#34d399', fontWeight: 700 }}>{blk.proposals_count} VERIFIED EVENT(S)</span>
                   </div>
                 </div>
 
                 {blk.proposals && blk.proposals.length > 0 && (
-                  <div style={{ marginTop: '12px', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
+                  <div style={{ marginTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '12px' }}>
                     <button
                       onClick={() => setExpandedBlockId(isExpanded ? null : blk.block_id)}
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#2563eb',
+                        color: '#38bdf8',
                         fontSize: '0.8rem',
-                        fontWeight: 600,
+                        fontWeight: 700,
                         cursor: 'pointer',
                         padding: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontFamily: 'var(--font-mono)'
                       }}
                     >
-                      {isExpanded ? '▲ Hide Proposals' : `▼ Inspect ${blk.proposals.length} Committed Proposals`}
+                      {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      {isExpanded ? 'COLLAPSE PROPOSAL DETAILS' : `INSPECT ${blk.proposals.length} CANONICAL PROPOSAL EVENT(S)`}
                     </button>
 
                     {isExpanded && (
-                      <div style={{ marginTop: '10px', display: 'grid', gap: '8px' }}>
+                      <div style={{ marginTop: '12px', display: 'grid', gap: '10px' }}>
                         {blk.proposals.map((prop, pIdx) => (
                           <pre
                             key={pIdx}
                             style={{
-                              background: '#0f172a',
-                              color: '#a5f3fc',
-                              padding: '12px',
-                              borderRadius: '6px',
-                              fontSize: '0.75rem',
+                              background: '#060913',
+                              border: '1px solid rgba(56, 189, 248, 0.2)',
+                              color: '#67e8f9',
+                              padding: '14px',
+                              borderRadius: '8px',
+                              fontSize: '0.74rem',
                               overflowX: 'auto',
+                              fontFamily: 'var(--font-mono)'
                             }}
                           >
                             {JSON.stringify(prop, null, 2)}

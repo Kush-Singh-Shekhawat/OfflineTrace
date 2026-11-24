@@ -47,6 +47,9 @@ Implemented routes:
 - `POST /api/v1/recipients` — register recipient identity and metadata.
 - `GET /api/v1/recipients` — list enrolled recipients with ML-KEM-768 and ML-DSA-65 public key fingerprints.
 - `POST /api/v1/recipients/{recipient_id}/keys` — generate and register post-quantum key pairs.
+- `POST /api/v1/recipients/{recipient_id}/revoke` — revoke an officer's keys (marks compromised/revoked while preserving audit trails).
+- `POST /api/v1/recipients/{recipient_id}/rotate` — rotate keypairs, generating fresh ML-KEM and ML-DSA keys.
+- `DELETE /api/v1/recipients/{recipient_id}` — permanently purge a recipient record and keys from keystore storage.
 
 *Security Invariant:* Private key material is never exposed or returned by any API endpoint.
 

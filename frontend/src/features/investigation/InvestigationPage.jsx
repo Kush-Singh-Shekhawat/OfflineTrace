@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { apiRequest } from '../../services/apiClient.js';
+import { SearchCheck, ShieldCheck, AlertTriangle, CheckCircle2, FileCheck } from '../../components/Icons.jsx';
 
 export default function InvestigationPage() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -126,78 +127,99 @@ export default function InvestigationPage() {
   };
 
   return (
-    <section style={{ maxWidth: '1080px', margin: '0 auto', fontFamily: 'inherit' }}>
-      <header style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '1.8rem', margin: '0 0 6px 0', color: '#0f172a' }}>
-          Forensic Watermark Investigation
-        </h2>
-        <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
-          Member B Screen — Suspected PDF analysis, watermark extraction, and cryptographic ledger verification.
-        </p>
+    <section style={{ maxWidth: '1180px', margin: '0 auto', fontFamily: 'inherit' }}>
+      <header style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <SearchCheck size={24} color="#00f0ff" />
+            <h2 style={{ fontSize: '1.85rem', margin: 0, color: '#ffffff', fontWeight: 800, letterSpacing: '0.04em' }}>
+              FORENSIC WATERMARK INVESTIGATION
+            </h2>
+          </div>
+          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.92rem' }}>
+            Member B Component &bull; Suspected PDF Leak Analysis, Non-Blind Extraction, and Ledger Quorum Verification
+          </p>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: 'rgba(56, 189, 248, 0.08)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          padding: '8px 14px',
+          borderRadius: '8px',
+          fontSize: '0.78rem',
+          color: '#38bdf8',
+          fontFamily: 'var(--font-mono)'
+        }}>
+          <ShieldCheck size={14} color="#38bdf8" />
+          <span>FORENSIC PROFILE: METADATA FEC (3X REPETITION)</span>
+        </div>
       </header>
 
       {/* Honesty & Evidence Boundary Notice */}
       <div style={{
-        backgroundColor: '#fffbeb',
-        border: '1px solid #fde68a',
-        borderRadius: '8px',
-        padding: '12px 16px',
-        marginBottom: '24px',
+        background: 'rgba(245, 158, 11, 0.08)',
+        border: '1px solid rgba(245, 158, 11, 0.3)',
+        borderRadius: '10px',
+        padding: '16px 20px',
+        marginBottom: '26px',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
+        gap: '14px',
       }}>
-        <span style={{ fontSize: '1.25rem' }}>⚖️</span>
-        <div style={{ fontSize: '0.88rem', color: '#92400e', lineHeight: 1.4 }}>
-          <strong>Honesty Boundary:</strong> An extracted forensic watermark and valid ledger record links a document to a specific decryption event and recipient cryptographic identity. It does not constitute legal proof of who physically leaked the file.
+        <span style={{ fontSize: '1.4rem' }}>⚖️</span>
+        <div style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+          <strong style={{ color: '#fbbf24' }}>Forensic Invariant Boundary:</strong> An extracted forensic watermark and valid ledger record links a document to a specific decryption event and recipient cryptographic identity. It does not constitute standalone legal proof of who physically leaked the file.
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
         {/* Upload Form */}
-        <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#1e293b' }}>
+        <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: 'rgba(13, 20, 36, 0.85)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#ffffff', fontWeight: 700 }}>
             📁 Upload Suspected Leaked Document
           </h3>
-          <div style={{ display: 'grid', gap: '14px' }}>
+          <div style={{ display: 'grid', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                Select Leaked PDF File
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+                SELECT LEAKED PDF FILE
               </label>
               <input
                 type="file"
                 accept=".pdf"
                 onChange={handleFileChange}
-                style={{ width: '100%', padding: '8px', border: '1px dashed #cbd5e1', borderRadius: '6px' }}
+                style={{ width: '100%', padding: '10px', fontSize: '0.82rem' }}
               />
               {selectedFile && (
-                <div style={{ fontSize: '0.8rem', color: '#15803d', marginTop: '4px' }}>
+                <div style={{ fontSize: '0.76rem', color: '#34d399', marginTop: '6px', fontFamily: 'var(--font-mono)' }}>
                   Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
                 </div>
               )}
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                Case / Target Document ID
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+                TARGET DOCUMENT ID
               </label>
               <input
                 type="text"
                 value={documentId}
                 onChange={(e) => setDocumentId(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                style={{ width: '100%' }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                Investigator ID
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+                INVESTIGATOR IDENTIFIER
               </label>
               <input
                 type="text"
                 value={investigatorId}
                 onChange={(e) => setInvestigatorId(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                style={{ width: '100%' }}
               />
             </div>
 
@@ -205,27 +227,29 @@ export default function InvestigationPage() {
               onClick={handleUploadAndAnalyze}
               disabled={loading || !selectedFile}
               style={{
-                backgroundColor: '#dc2626',
+                backgroundColor: '#ef4444',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
-                padding: '10px 16px',
-                fontWeight: 600,
+                borderRadius: '8px',
+                padding: '12px 18px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
                 cursor: loading || !selectedFile ? 'not-allowed' : 'pointer',
                 marginTop: '6px',
+                boxShadow: '0 0 15px rgba(239, 68, 68, 0.35)',
               }}
             >
-              {loading ? 'Extracting & Verifying...' : '🔍 Analyze Leaked PDF'}
+              {loading ? 'EXTRACTING & VERIFYING...' : '🔍 ANALYZE LEAKED PDF'}
             </button>
           </div>
         </div>
 
         {/* Quick Simulation Presets */}
-        <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#1e293b' }}>
-            🧪 Quick Test Presets (Phase 5 Gates)
+        <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: 'rgba(13, 20, 36, 0.85)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+          <h3 style={{ margin: '0 0 12px 0', fontSize: '1.15rem', color: '#ffffff', fontWeight: 700 }}>
+            🧪 Quick Test Presets (Phase 5 Verification Gates)
           </h3>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 16px 0' }}>
+          <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0 0 16px 0' }}>
             Test the investigation verification engine against synthetic fixtures without manual file creation:
           </p>
 
@@ -235,18 +259,18 @@ export default function InvestigationPage() {
               disabled={loading}
               style={{
                 textAlign: 'left',
-                padding: '12px',
+                padding: '12px 14px',
                 borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                background: '#f8fafc',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                background: 'rgba(6, 11, 22, 0.8)',
                 cursor: 'pointer',
               }}
             >
-              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#0f172a' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#ffffff' }}>
                 Scenario 1: Unrelated Clean PDF
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                Document has no watermark metadata. Expected: <code>NO_MATCH</code> (confidence 0.0).
+              <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+                Document has no watermark metadata. Expected: <code style={{ color: '#f87171' }}>NO_MATCH</code> (0.0).
               </div>
             </button>
 
@@ -255,18 +279,18 @@ export default function InvestigationPage() {
               disabled={loading}
               style={{
                 textAlign: 'left',
-                padding: '12px',
+                padding: '12px 14px',
                 borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                background: '#f8fafc',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                background: 'rgba(6, 11, 22, 0.8)',
                 cursor: 'pointer',
               }}
             >
-              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#0f172a' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#ffffff' }}>
                 Scenario 2: Ambiguous / Unregistered Watermark
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                Token extracted from PDF, but no matching block on ledger. Expected: <code>INCONCLUSIVE</code>.
+              <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+                Token extracted from PDF, but no matching block on ledger. Expected: <code style={{ color: '#fbbf24' }}>INCONCLUSIVE</code>.
               </div>
             </button>
 
@@ -275,17 +299,17 @@ export default function InvestigationPage() {
               disabled={loading}
               style={{
                 textAlign: 'left',
-                padding: '12px',
+                padding: '12px 14px',
                 borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                background: '#f8fafc',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                background: 'rgba(6, 11, 22, 0.8)',
                 cursor: 'pointer',
               }}
             >
-              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#0f172a' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#ffffff' }}>
                 Scenario 3: Suspected Leak Scan
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                 Scans candidate watermark token against local validator chain.
               </div>
             </button>
@@ -295,13 +319,14 @@ export default function InvestigationPage() {
 
       {error && (
         <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-          color: '#991b1b',
+          backgroundColor: 'rgba(239, 68, 68, 0.12)',
+          border: '1px solid rgba(239, 68, 68, 0.4)',
+          borderRadius: '10px',
+          padding: '14px 18px',
+          marginBottom: '22px',
+          color: '#f87171',
           fontSize: '0.9rem',
+          fontFamily: 'var(--font-mono)'
         }}>
           <strong>Investigation Error:</strong> {error}
         </div>
@@ -312,17 +337,17 @@ export default function InvestigationPage() {
         <div className="panel" style={{
           padding: '28px',
           borderRadius: '12px',
-          background: '#ffffff',
-          border: '1px solid #cbd5e1',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          background: 'rgba(13, 20, 36, 0.85)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.3rem', color: '#0f172a' }}>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.3rem', color: '#ffffff', fontWeight: 800 }}>
                 Forensic Evidence Report
               </h3>
-              <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                ID: <code>{report.investigation_id}</code> &bull; Generated: {new Date(report.generated_at).toLocaleTimeString()}
+              <div style={{ fontSize: '0.85rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+                ID: <code style={{ color: '#00f0ff' }}>{report.investigation_id}</code> &bull; Generated: {new Date(report.generated_at).toLocaleTimeString()}
               </div>
             </div>
             {(() => {
@@ -330,12 +355,13 @@ export default function InvestigationPage() {
               return (
                 <span style={{
                   padding: '6px 14px',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   fontSize: '0.85rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   backgroundColor: badge.bg,
                   color: badge.color,
                   border: `1px solid ${badge.border}`,
+                  fontFamily: 'var(--font-mono)'
                 }}>
                   {badge.label}
                 </span>
@@ -345,34 +371,35 @@ export default function InvestigationPage() {
 
           {/* Diagnostic Summary */}
           <div style={{
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
+            background: 'rgba(6, 11, 22, 0.8)',
+            border: '1px solid rgba(56, 189, 248, 0.2)',
             borderRadius: '8px',
             padding: '16px',
             marginBottom: '24px',
-            fontSize: '0.9rem',
-            color: '#1e293b',
+            fontSize: '0.88rem',
+            color: '#cbd5e1',
             lineHeight: 1.5,
+            fontFamily: 'var(--font-mono)'
           }}>
-            <strong>Diagnostics:</strong> {report.diagnostics}
+            <strong style={{ color: '#38bdf8' }}>DIAGNOSTICS:</strong> {report.diagnostics}
           </div>
 
           {/* Cryptographic Verification Checklist */}
-          <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', color: '#334155' }}>
+          <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', color: '#ffffff', fontWeight: 700 }}>
             Cryptographic &amp; Provenance Verification Matrix
           </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '24px' }}>
             <div style={{
               padding: '16px',
               borderRadius: '8px',
-              background: report.signature_verified ? '#f0fdf4' : '#fef2f2',
-              border: `1px solid ${report.signature_verified ? '#bbf7d0' : '#fecaca'}`,
+              background: report.signature_verified ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+              border: `1px solid ${report.signature_verified ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
             }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569' }}>RECIPIENT SIGNATURE</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: report.signature_verified ? '#15803d' : '#b91c1c', marginTop: '4px' }}>
-                {report.signature_verified ? '✅ ML-DSA-65 Valid' : '❌ Unverified'}
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>RECIPIENT SIGNATURE</div>
+              <div style={{ fontSize: '1.05rem', fontWeight: 800, color: report.signature_verified ? '#34d399' : '#f87171', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
+                {report.signature_verified ? 'ML-DSA-65 VALID' : 'UNVERIFIED'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>
                 Canonical event signed by recipient private key
               </div>
             </div>
@@ -380,14 +407,14 @@ export default function InvestigationPage() {
             <div style={{
               padding: '16px',
               borderRadius: '8px',
-              background: report.quorum_verified ? '#f0fdf4' : '#fef2f2',
-              border: `1px solid ${report.quorum_verified ? '#bbf7d0' : '#fecaca'}`,
+              background: report.quorum_verified ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+              border: `1px solid ${report.quorum_verified ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
             }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569' }}>QUORUM COMMIT</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: report.quorum_verified ? '#15803d' : '#b91c1c', marginTop: '4px' }}>
-                {report.quorum_verified ? '✅ 2-of-3 Quorum' : '❌ No Quorum'}
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>QUORUM COMMIT</div>
+              <div style={{ fontSize: '1.05rem', fontWeight: 800, color: report.quorum_verified ? '#34d399' : '#f87171', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
+                {report.quorum_verified ? '2-OF-3 QUORUM' : 'NO QUORUM'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>
                 Independent validator signatures committed block
               </div>
             </div>
@@ -395,59 +422,62 @@ export default function InvestigationPage() {
             <div style={{
               padding: '16px',
               borderRadius: '8px',
-              background: report.chain_verified ? '#f0fdf4' : '#fef2f2',
-              border: `1px solid ${report.chain_verified ? '#bbf7d0' : '#fecaca'}`,
+              background: report.chain_verified ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+              border: `1px solid ${report.chain_verified ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
             }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569' }}>HASH CHAIN</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: report.chain_verified ? '#15803d' : '#b91c1c', marginTop: '4px' }}>
-                {report.chain_verified ? '✅ Chain Continuous' : '❌ Diverged'}
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>HASH CHAIN</div>
+              <div style={{ fontSize: '1.05rem', fontWeight: 800, color: report.chain_verified ? '#34d399' : '#f87171', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
+                {report.chain_verified ? 'CHAIN CONTINUOUS' : 'DIVERGED'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>
                 SHA3-256 block sequence uncorrupted
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
             <button
               onClick={handleFetchDossier}
               disabled={dossierLoading}
               style={{
-                padding: '10px 18px',
-                backgroundColor: '#1e3a8a',
-                color: 'white',
+                padding: '12px 20px',
+                backgroundColor: '#00f0ff',
+                color: '#060913',
                 border: 'none',
-                borderRadius: '6px',
-                fontWeight: 600,
-                fontSize: '0.85rem',
+                borderRadius: '8px',
+                fontWeight: 800,
+                fontSize: '0.82rem',
                 cursor: dossierLoading ? 'not-allowed' : 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 2px 4px rgba(30, 58, 138, 0.2)',
+                boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+                fontFamily: 'var(--font-mono)'
               }}
             >
-              {dossierLoading ? 'Compiling Dossier...' : '🏛️ Generate Court of Inquiry Dossier'}
+              {dossierLoading ? 'COMPILING DOSSIER...' : '🏛️ GENERATE COURT OF INQUIRY DOSSIER'}
             </button>
 
             <button
               onClick={downloadReport}
               style={{
-                padding: '10px 18px',
-                backgroundColor: '#334155',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontWeight: 600,
-                fontSize: '0.85rem',
+                padding: '12px 18px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '0.82rem',
                 cursor: 'pointer',
+                fontFamily: 'var(--font-mono)'
               }}
             >
-              💾 Export Evidence Summary (JSON)
+              💾 EXPORT EVIDENCE SUMMARY (JSON)
             </button>
           </div>
         </div>
       )}
+
 
       {/* Court of Inquiry Dossier Modal */}
       {dossierModal && dossierData && (

@@ -75,6 +75,16 @@ def rotate_recipient(recipient_id: str, passphrase: str = "offline-trace-default
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
 
+@router.delete("/recipients/{recipient_id}")
+def delete_recipient(recipient_id: str) -> Dict[str, Any]:
+    """Permanently delete / purge a recipient record and their local key directory."""
+    try:
+        key_manager.delete_recipient(recipient_id)
+        return {"status": "deleted", "recipient_id": recipient_id, "message": f"Recipient '{recipient_id}' purged successfully."}
+    except KeyManagerError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+
 @router.post("/recipient/decrypt", response_model=DecryptActionResponse)
 def decrypt_recipient_document(req: DecryptActionRequest) -> DecryptActionResponse:
     """Execute recipient-local decryption and provenance event signing."""

@@ -42,8 +42,19 @@ app.include_router(legacy_router)
 
 
 # ---------------------------------------------------------------------------
-# Health endpoint – lightweight status check.
+# Root and Health endpoints
 # ---------------------------------------------------------------------------
+@app.get("/", tags=["Root"])
+async def root():
+    return {
+        "service": "OfflineTrace API",
+        "description": "Ministry of Defence / WESEE (SIH26237) Air-Gapped Tactical Document Security Enclave",
+        "status": "healthy",
+        "documentation": "/docs",
+        "health": "/health",
+    }
+
+
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {"status": "healthy"}

@@ -534,3 +534,14 @@ class TestRecipientCryptoService:
                 version_id="v1",
             )
 
+    def test_key_manager_delete_recipient(self, tmp_path):
+        km = KeyManager(keystore_dir=tmp_path / "keystore")
+        km.create_recipient_keys("recip_del", "Delete Me", "del@wesee.mod")
+        assert len(km.list_public_records()) == 1
+
+        km.delete_recipient("recip_del")
+        assert len(km.list_public_records()) == 0
+
+        with pytest.raises(KeyManagerError, match="not found"):
+            km.delete_recipient("recip_del")
+

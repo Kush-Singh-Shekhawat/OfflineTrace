@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../services/apiClient.js';
+import { FileLock, ShieldCheck, Users, Upload, CheckCircle2, AlertTriangle, Layers, Cpu, Radio } from '../../components/Icons.jsx';
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
@@ -66,8 +67,8 @@ export default function DocumentsPage() {
       setSuccessMsg(null);
 
       const formData = new FormData();
-      formData.append('title', title.trim() || 'Classified Naval Directive');
-      formData.append('recipient_ids', selectedRecipientIds.join(','));
+      formData.append('title', title.trim());
+      formData.append('recipient_ids', JSON.stringify(selectedRecipientIds));
       if (selectedFile) {
         formData.append('file', selectedFile);
       }
@@ -89,111 +90,145 @@ export default function DocumentsPage() {
   };
 
   return (
-    <section style={{ maxWidth: '1080px', margin: '0 auto', fontFamily: 'inherit' }}>
-      <header style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '1.8rem', margin: '0 0 6px 0', color: '#0f172a' }}>
-          Document Protection &amp; Distribution
-        </h2>
-        <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
-          Sender Workflow — Bulk AES-256-GCM encryption with per-recipient ML-KEM-768 post-quantum key envelopes.
-        </p>
+    <section style={{ maxWidth: '1180px', margin: '0 auto', fontFamily: 'inherit' }}>
+      <header style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <FileLock size={24} color="#00f0ff" />
+            <h2 style={{ fontSize: '1.85rem', margin: 0, color: '#ffffff', fontWeight: 800, letterSpacing: '0.04em' }}>
+              DOCUMENT PROTECTION &amp; PACKAGING
+            </h2>
+          </div>
+          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.92rem' }}>
+            Sender Cryptographic Pipeline &bull; AES-256-GCM Bulk Payload with Multi-Recipient ML-KEM-768 Envelopes
+          </p>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: 'rgba(56, 189, 248, 0.08)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          padding: '8px 14px',
+          borderRadius: '8px',
+          fontSize: '0.78rem',
+          color: '#38bdf8',
+          fontFamily: 'var(--font-mono)'
+        }}>
+          <Cpu size={14} color="#38bdf8" />
+          <span>ALGORITHM: AES-256-GCM + ML-KEM-768</span>
+        </div>
       </header>
 
       {/* Cryptographic Architecture Invariant Banner */}
       <div style={{
-        backgroundColor: '#f0fdf4',
-        border: '1px solid #bbf7d0',
-        borderRadius: '8px',
-        padding: '12px 16px',
-        marginBottom: '24px',
+        background: 'rgba(16, 185, 129, 0.08)',
+        border: '1px solid rgba(16, 185, 129, 0.3)',
+        borderRadius: '10px',
+        padding: '16px 20px',
+        marginBottom: '26px',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
+        gap: '14px',
       }}>
-        <span style={{ fontSize: '1.25rem' }}>🔐</span>
-        <div style={{ fontSize: '0.88rem', color: '#166534', lineHeight: 1.4 }}>
-          <strong>Hybrid Envelope Invariant:</strong> The document payload is encrypted <em>once</em> with a fresh random 32-byte Content Encryption Key (AES-256-GCM).
-          The CEK is encapsulated into <em>N distinct ML-KEM-768 envelopes</em> for authorized officers. Revoking an officer requires zero re-encryption of the document.
+        <ShieldCheck size={26} color="#34d399" style={{ flexShrink: 0 }} />
+        <div style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+          <strong style={{ color: '#34d399' }}>Hybrid Envelope Invariant:</strong> The document payload is encrypted <em>once</em> with a fresh random 32-byte Content Encryption Key (AES-256-GCM).
+          The CEK is encapsulated into <em>N distinct ML-KEM-768 envelopes</em> for authorized officers. Revoking an officer requires zero re-encryption of the bulk payload.
         </div>
       </div>
 
       {successMsg && (
         <div style={{
-          backgroundColor: '#eff6ff',
-          border: '1px solid #bfdbfe',
-          borderRadius: '8px',
-          padding: '10px 16px',
-          marginBottom: '20px',
-          color: '#1e40af',
+          background: 'rgba(16, 185, 129, 0.12)',
+          border: '1px solid rgba(16, 185, 129, 0.4)',
+          borderRadius: '10px',
+          padding: '12px 18px',
+          marginBottom: '22px',
+          color: '#34d399',
           fontSize: '0.9rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          fontFamily: 'var(--font-mono)'
         }}>
-          {successMsg}
+          <CheckCircle2 size={16} color="#34d399" />
+          <span>{successMsg}</span>
         </div>
       )}
 
       {error && (
         <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          padding: '10px 16px',
-          marginBottom: '20px',
-          color: '#991b1b',
+          background: 'rgba(239, 68, 68, 0.12)',
+          border: '1px solid rgba(239, 68, 68, 0.4)',
+          borderRadius: '10px',
+          padding: '12px 18px',
+          marginBottom: '22px',
+          color: '#f87171',
           fontSize: '0.9rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          fontFamily: 'var(--font-mono)'
         }}>
-          <strong>Error:</strong> {error}
+          <AlertTriangle size={16} color="#ef4444" />
+          <span>{error}</span>
         </div>
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
         {/* Upload & Protect Form */}
-        <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#1e293b' }}>
-            🔒 Protect &amp; Distribute Document
-          </h3>
+        <div className="panel" style={{ background: 'rgba(13, 20, 36, 0.85)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+            <Upload size={18} color="#00f0ff" />
+            <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#ffffff', fontWeight: 700 }}>
+              Protect &amp; Distribute Directive
+            </h3>
+          </div>
 
-          <form onSubmit={handleProtectDocument} style={{ display: 'grid', gap: '14px' }}>
+          <form onSubmit={handleProtectDocument} style={{ display: 'grid', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                Document Title / Directive
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+                DIRECTIVE TITLE / CLASSIFICATION
               </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                style={{ width: '100%' }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                Upload PDF Document (Optional — Generates Synthetic if Empty)
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+                PDF DOCUMENT ATTACHMENT (LEAVE EMPTY FOR SYNTHETIC FIXTURE)
               </label>
               <input
                 type="file"
                 accept=".pdf"
                 onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                style={{ width: '100%', fontSize: '0.82rem', padding: '8px' }}
               />
-              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '6px', fontFamily: 'var(--font-mono)' }}>
                 {selectedFile ? `Selected: ${selectedFile.name}` : 'Default: Generates standard naval operational directive template.'}
               </div>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
-                Select Authorized Recipients (ML-KEM-768 Envelopes)
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+                SELECT AUTHORIZED RECIPIENTS (ML-KEM-768 ENVELOPES)
               </label>
               <div style={{
                 maxHeight: '160px',
                 overflowY: 'auto',
-                border: '1px solid #e2e8f0',
-                borderRadius: '6px',
-                padding: '8px',
-                background: '#f8fafc',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                borderRadius: '8px',
+                padding: '10px 12px',
+                background: '#090e1a',
                 display: 'grid',
-                gap: '6px',
+                gap: '8px',
               }}>
                 {recipients.length === 0 ? (
                   <div style={{ fontSize: '0.82rem', color: '#64748b', padding: '4px' }}>
@@ -206,10 +241,11 @@ export default function DocumentsPage() {
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px',
+                        gap: '10px',
                         fontSize: '0.82rem',
                         cursor: r.status === 'active' ? 'pointer' : 'not-allowed',
-                        opacity: r.status === 'active' ? 1 : 0.5,
+                        opacity: r.status === 'active' ? 1 : 0.45,
+                        color: '#f1f5f9'
                       }}
                     >
                       <input
@@ -219,8 +255,9 @@ export default function DocumentsPage() {
                         onChange={() => toggleRecipient(r.recipient_id)}
                       />
                       <span>
-                        <strong>{r.name}</strong> ({r.recipient_id})
-                        {r.status !== 'active' && <span style={{ color: '#dc2626', marginLeft: '6px' }}>[REVOKED]</span>}
+                        <strong style={{ color: '#ffffff' }}>{r.name}</strong>{' '}
+                        <code style={{ color: '#38bdf8' }}>({r.recipient_id})</code>
+                        {r.status !== 'active' && <span style={{ color: '#ef4444', marginLeft: '6px', fontWeight: 800 }}>[REVOKED]</span>}
                       </span>
                     </label>
                   ))
@@ -232,113 +269,124 @@ export default function DocumentsPage() {
               type="submit"
               disabled={protecting || recipients.length === 0}
               style={{
-                marginTop: '8px',
-                padding: '10px 16px',
-                backgroundColor: '#2563eb',
-                color: 'white',
+                marginTop: '6px',
+                padding: '12px 18px',
+                backgroundColor: '#00f0ff',
+                color: '#060913',
                 border: 'none',
-                borderRadius: '6px',
-                fontWeight: 600,
+                borderRadius: '8px',
+                fontWeight: 800,
+                fontSize: '0.88rem',
                 cursor: protecting ? 'not-allowed' : 'pointer',
+                boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)'
               }}
             >
-              {protecting ? 'Encrypting & Packaging Envelopes...' : '🚀 Encrypt & Generate PQC Envelopes'}
+              {protecting ? 'ENCRYPTING & PACKAGING ENVELOPES...' : 'ENCRYPT & GENERATE PQC ENVELOPES'}
             </button>
           </form>
         </div>
 
         {/* Protection Output Details */}
-        <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#1e293b' }}>
-            📦 Active Cryptographic Packaging
-          </h3>
+        <div className="panel" style={{ background: 'rgba(13, 20, 36, 0.85)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+            <Layers size={18} color="#34d399" />
+            <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#ffffff', fontWeight: 700 }}>
+              Active Cryptographic Packaging
+            </h3>
+          </div>
 
           {selectedDocDetails ? (
-            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
-              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '8px', fontSize: '0.95rem' }}>
+            <div style={{ background: 'rgba(6, 11, 22, 0.8)', padding: '18px', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.2)', fontSize: '0.85rem' }}>
+              <div style={{ fontWeight: 800, color: '#ffffff', marginBottom: '10px', fontSize: '1rem' }}>
                 {selectedDocDetails.title}
               </div>
-              <div style={{ display: 'grid', gap: '6px', color: '#334155' }}>
-                <div><strong>Document ID:</strong> <code>{selectedDocDetails.document_id}</code></div>
-                <div><strong>Symmetric Cipher:</strong> <span style={{ color: '#0284c7', fontWeight: 600 }}>AES-256-GCM (1 shared ciphertext)</span></div>
-                <div><strong>Ciphertext Size:</strong> {selectedDocDetails.ciphertext_size_bytes} bytes</div>
-                <div><strong>Generated Envelopes:</strong> {selectedDocDetails.envelopes_count} recipient(s)</div>
-                <div><strong>KEM Algorithm:</strong> <span style={{ color: '#15803d', fontWeight: 600 }}>ML-KEM-768 (NIST FIPS 203)</span></div>
+              <div style={{ display: 'grid', gap: '8px', color: '#cbd5e1', fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>
+                <div><span style={{ color: '#64748b' }}>DOC ID:</span> <code style={{ color: '#38bdf8' }}>{selectedDocDetails.document_id}</code></div>
+                <div><span style={{ color: '#64748b' }}>SYMMETRIC:</span> <span style={{ color: '#38bdf8', fontWeight: 700 }}>AES-256-GCM (1 shared ciphertext)</span></div>
+                <div><span style={{ color: '#64748b' }}>CIPHERTEXT:</span> {selectedDocDetails.ciphertext_size_bytes} bytes</div>
+                <div><span style={{ color: '#64748b' }}>ENVELOPES:</span> {selectedDocDetails.envelopes_count} recipient(s)</div>
+                <div><span style={{ color: '#64748b' }}>KEM SUITE:</span> <span style={{ color: '#34d399', fontWeight: 700 }}>ML-KEM-768 (NIST FIPS 203)</span></div>
               </div>
 
               {selectedDocDetails.envelopes && (
-                <div style={{ marginTop: '12px', borderTop: '1px solid #cbd5e1', paddingTop: '10px' }}>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                    Recipient Envelope Breakdown:
+                <div style={{ marginTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '12px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', marginBottom: '8px', fontFamily: 'var(--font-mono)' }}>
+                    RECIPIENT ENVELOPE ROSTER:
                   </div>
                   {selectedDocDetails.envelopes.map(env => (
-                    <div key={env.recipient_id} style={{ fontSize: '0.75rem', background: '#ffffff', padding: '6px 8px', borderRadius: '4px', border: '1px solid #e2e8f0', marginBottom: '4px' }}>
-                      👤 <strong>{env.recipient_name}</strong> (<code>{env.recipient_id}</code>) &bull; KEM CT: 1088B
+                    <div key={env.recipient_id} style={{ fontSize: '0.76rem', background: '#0b1120', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(56, 189, 248, 0.15)', marginBottom: '6px', display: 'flex', justifyContent: 'space-between' }}>
+                      <span>👤 <strong style={{ color: '#ffffff' }}>{env.recipient_name}</strong> (<code style={{ color: '#38bdf8' }}>{env.recipient_id}</code>)</span>
+                      <span style={{ color: '#34d399', fontFamily: 'var(--font-mono)' }}>KEM CT: 1088B</span>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           ) : (
-            <div style={{ color: '#64748b', fontSize: '0.88rem', textAlign: 'center', padding: '40px 10px' }}>
-              Select recipients and click <strong>Encrypt &amp; Generate PQC Envelopes</strong> to see the cryptographic packaging breakdown here.
+            <div style={{ color: '#64748b', fontSize: '0.88rem', textAlign: 'center', padding: '60px 10px', fontFamily: 'var(--font-mono)' }}>
+              SELECT RECIPIENTS AND CLICK ENCRYPT TO VIEW POST-QUANTUM PACKAGING TELEMETRY.
             </div>
           )}
         </div>
       </div>
 
       {/* Protected Documents Table */}
-      <div className="panel" style={{ padding: '24px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#1e293b' }}>
-          📑 Protected Document Registry ({documents.length})
+      <div className="panel" style={{ background: 'rgba(13, 20, 36, 0.85)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+        <h3 style={{ margin: '0 0 16px 0', fontSize: '1.15rem', color: '#ffffff', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FileLock size={18} color="#00f0ff" />
+          Protected Document Registry ({documents.length})
         </h3>
 
         {documents.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '24px', color: '#64748b', fontSize: '0.9rem' }}>
-            No protected documents registered yet. Upload and protect your first directive above!
+          <div style={{ textAlign: 'center', padding: '30px', color: '#64748b', fontSize: '0.9rem', fontFamily: 'var(--font-mono)' }}>
+            NO PROTECTED DIRECTIVES REGISTERED IN LOCAL STORAGE.
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                  <th style={{ padding: '10px' }}>Document ID</th>
-                  <th style={{ padding: '10px' }}>Directive Title</th>
-                  <th style={{ padding: '10px' }}>Status</th>
-                  <th style={{ padding: '10px' }}>Envelopes</th>
-                  <th style={{ padding: '10px' }}>Created</th>
+                <tr style={{ borderBottom: '1px solid rgba(56, 189, 248, 0.2)', textAlign: 'left', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+                  <th style={{ padding: '12px 10px' }}>DOCUMENT ID</th>
+                  <th style={{ padding: '12px 10px' }}>DIRECTIVE TITLE</th>
+                  <th style={{ padding: '12px 10px' }}>STATUS</th>
+                  <th style={{ padding: '12px 10px' }}>ENVELOPES</th>
+                  <th style={{ padding: '12px 10px' }}>CREATED</th>
                 </tr>
               </thead>
               <tbody>
                 {documents.map((doc) => (
-                  <tr key={doc.document_id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '10px' }}><code>{doc.document_id}</code></td>
-                    <td style={{ padding: '10px', fontWeight: 600, color: '#1e293b' }}>{doc.title}</td>
-                    <td style={{ padding: '10px' }}>
+                  <tr key={doc.document_id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                    <td style={{ padding: '12px 10px' }}><code style={{ color: '#38bdf8' }}>{doc.document_id}</code></td>
+                    <td style={{ padding: '12px 10px', fontWeight: 600, color: '#ffffff' }}>{doc.title}</td>
+                    <td style={{ padding: '12px 10px' }}>
                       <span style={{
                         padding: '3px 8px',
                         borderRadius: '4px',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        color: '#34d399',
+                        fontFamily: 'var(--font-mono)'
+                      }}>
+                        {doc.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 10px' }}>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        background: 'rgba(56, 189, 248, 0.12)',
+                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                        color: '#38bdf8',
                         fontSize: '0.75rem',
                         fontWeight: 700,
-                        backgroundColor: '#dcfce7',
-                        color: '#15803d',
+                        fontFamily: 'var(--font-mono)'
                       }}>
-                        {doc.status}
+                        {doc.envelopes_count} OFFICER(S)
                       </span>
                     </td>
-                    <td style={{ padding: '10px' }}>
-                      <span style={{
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        background: '#e0f2fe',
-                        color: '#0369a1',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                      }}>
-                        {doc.envelopes_count} Officer(s)
-                      </span>
-                    </td>
-                    <td style={{ padding: '10px', color: '#64748b' }}>
+                    <td style={{ padding: '12px 10px', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
                       {new Date(doc.created_at).toLocaleString()}
                     </td>
                   </tr>

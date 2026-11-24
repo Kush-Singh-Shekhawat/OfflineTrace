@@ -191,6 +191,10 @@ class KeyManager:
         Raises:
             KeyManagerError: If keys do not exist or passphrase is invalid.
         """
+        record = self.get_public_record(recipient_id)
+        if record.status == "revoked":
+            raise KeyManagerError(f"Recipient '{recipient_id}' is revoked; private keys cannot be accessed.")
+
         r_dir = self._recipient_dir(recipient_id)
         priv_file = r_dir / "private_keys.enc"
 
@@ -312,3 +316,11 @@ class KeyManager:
 
         self._save_private_keys(priv_file, kem_dk, dsa_sk, passphrase or "")
         return updated
+
+    def delete_recipient(self, recipient_id: str) -> None:
+        """Purge a recipient record and their local key directory."""
+        r_dir = self._recipient_dir(recipient_id)
+        if not r_dir.exists():
+            raise KeyManagerError(f"Recipient '{recipient_id}' not found.")
+        import shutil
+        shutil.rmtree(r_dir)
