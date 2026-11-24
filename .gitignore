@@ -48,4 +48,9 @@ desktop.ini
 .pytest_cache/
 .coverage*
 test-results/
+
+# Internal development notes & agent guidelines (untracked for public release)
+AI_RULES.md
+DEVELOPMENT_STATUS.md
+
 playwright-report/

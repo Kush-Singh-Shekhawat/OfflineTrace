@@ -1,7 +1,6 @@
 # API Contracts
 
-This file is the shared agreement between frontend and backend. Update it before making
-breaking changes. Initial routes are placeholders and may return scaffold responses.
+This file documents the standardized API contracts between the frontend and backend micro-services for OfflineTrace.
 
 ## Conventions
 
@@ -37,36 +36,36 @@ Planned response:
 
 ## Documents
 
-Planned routes:
-- `POST /api/v1/documents` — upload/register a document.
-- `GET /api/v1/documents` — list documents.
-- `GET /api/v1/documents/{document_id}` — document metadata.
-
-Upload limits, file validation, and storage behavior must be specified before implementation.
+Implemented routes:
+- `POST /api/v1/documents/upload` — upload/register a document with AES-256-GCM encryption and ML-KEM-768 multi-recipient envelopes.
+- `GET /api/v1/documents` — list all registered documents with envelope rosters.
+- `GET /api/v1/documents/{document_id}` — retrieve document metadata and authorized recipient envelopes.
 
 ## Recipients
 
-Planned routes:
-- `POST /api/v1/recipients` — register recipient metadata.
-- `GET /api/v1/recipients` — list recipient metadata.
-- `POST /api/v1/recipients/{recipient_id}/keys` — create/register key metadata.
+Implemented routes:
+- `POST /api/v1/recipients` — register recipient identity and metadata.
+- `GET /api/v1/recipients` — list enrolled recipients with ML-KEM-768 and ML-DSA-65 public key fingerprints.
+- `POST /api/v1/recipients/{recipient_id}/keys` — generate and register post-quantum key pairs.
 
-Private key material must never be returned by an API list/detail endpoint.
+*Security Invariant:* Private key material is never exposed or returned by any API endpoint.
 
 ## Investigation
 
-Planned routes:
-- `POST /api/v1/investigations` — submit a synthetic or authorized PDF for analysis.
-- `GET /api/v1/investigations/{investigation_id}` — retrieve investigation status/result.
+Implemented routes:
+- `POST /api/v1/investigations` — submit a leaked PDF document for forensic non-blind watermark extraction.
+- `GET /api/v1/investigations/{investigation_id}` — retrieve forensic confidence report, bit error rates, and ledger verification.
 
-An extracted watermark is evidence for review, not automatic proof of who leaked a document.
+*Forensic Invariant:* Extracted watermarks are presented with strict statistical confidence and ledger cryptographic audit trails.
 
-## Ledger
+## Ledger & Consensus
 
-Planned routes:
-- `GET /api/v1/ledger/status` — report local ledger status.
-- `GET /api/v1/ledger/entries` — list verifiable entries.
-- `POST /api/v1/ledger/verify` — verify chain integrity.
+Implemented routes:
+- `GET /api/v1/ledger/status` — report 2-of-3 quorum cluster status, block height, and active node consensus.
+- `GET /api/v1/ledger/chain` — retrieve the cryptographic block chain with Merkle roots, SHA3-256 block hashes, and ML-DSA validator signatures.
+- `GET /api/v1/nodes/health` — retrieve live status of all 3 independent physical/local validator nodes.
+- `POST /api/v1/ledger/propose` — submit a signed event proposal for validator quorum consensus.
+
 
 ## Contract change checklist
 
