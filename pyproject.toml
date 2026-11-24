@@ -11,6 +11,13 @@ dependencies = [
   "fastapi>=0.115,<1.0",
   "uvicorn[standard]>=0.30,<1.0",
   "pydantic-settings>=2.4,<3.0",
+  "python-multipart>=0.0.9,<1.0",
+  "cryptography>=43,<47",
+  "pypdf>=5,<7",
+  "SQLAlchemy>=2.0,<3.0",
+  "httpx>=0.27,<1.0",
+  "kyber-py>=1.2.0",
+  "dilithium-py>=1.5.1",
 ]
 
 [tool.pytest.ini_options]
