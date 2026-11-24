@@ -18,10 +18,11 @@ from backend.app.api.routes import recipients, investigations, documents, ledger
 
 app = FastAPI(title="OfflineTrace API", version="1.0.0")
 
-# CORS – allow Vite dev server to call the API locally.
+# CORS – allow local and LAN devices to call the API.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["*"],
+    allow_origin_regex=r".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

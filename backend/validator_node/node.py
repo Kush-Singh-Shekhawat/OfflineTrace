@@ -14,6 +14,7 @@ import time
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from ..api.contracts import (
@@ -41,6 +42,15 @@ def create_validator_app(
 ) -> FastAPI:
     """Factory to create an isolated validator node FastAPI app."""
     app = FastAPI(title=f"OfflineTrace Validator Node [{node_id}]", version="1.0.0")
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_origin_regex=r".*",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.state.node_id = node_id
     app.state.db_path = db_path

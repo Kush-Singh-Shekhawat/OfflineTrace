@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -91,24 +92,27 @@ async def get_ledger_chain_blocks() -> List[Dict[str, Any]]:
 @router.get("/nodes/health")
 async def get_cluster_nodes_health() -> List[Dict[str, Any]]:
     """Return health and status of the 3 independent validator nodes."""
+    val1_url = os.getenv("VALIDATOR_1_URL", "http://localhost:8001")
+    val2_url = os.getenv("VALIDATOR_2_URL", "http://localhost:8002")
+    val3_url = os.getenv("VALIDATOR_3_URL", "http://localhost:8003")
     return [
         {
             "node_id": "val-1",
-            "url": "http://localhost:8001",
+            "url": val1_url,
             "status": "HEALTHY",
             "role": "Validator & Quorum Participant",
             "pqc_algorithm": "ML-DSA-65 (NIST FIPS 204)",
         },
         {
             "node_id": "val-2",
-            "url": "http://localhost:8002",
+            "url": val2_url,
             "status": "HEALTHY",
             "role": "Validator & Quorum Participant",
             "pqc_algorithm": "ML-DSA-65 (NIST FIPS 204)",
         },
         {
             "node_id": "val-3",
-            "url": "http://localhost:8003",
+            "url": val3_url,
             "status": "HEALTHY",
             "role": "Validator & Quorum Participant",
             "pqc_algorithm": "ML-DSA-65 (NIST FIPS 204)",
